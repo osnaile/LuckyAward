@@ -66,29 +66,61 @@ class MainPanel(wx.Panel):
 		self.showNumber.SetForegroundColour("Yellow")
 	        self.showNumber.SetFont(showNumberFont)
 
+		self.GetThirdButton.Enable(False)
+		self.GetSecondButton.Enable(False)
+		self.GetFirstButton.Enable(False)
 
 		self.timer = wx.Timer(self)
 		self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
 
 	def OnStartRollNumber(self, e):
 		self.timer.Start(100)
+		self.GetThirdButton.Enable(True)
+		self.GetSecondButton.Enable(True)
+		self.GetFirstButton.Enable(True)
+
+	def getThisDegreeResult(self, degree, limit):
+		global candidateList
+		global preList
+		global resultList
+		self.timer.Stop()
+		self.GetThirdButton.Enable(False)
+		self.GetSecondButton.Enable(False)
+		self.GetFirstButton.Enable(False)
+
+		allNumberDisplay = ""
+		trueDegree = degree - 1
+
+		if (len(resultList[trueDegree]) > 0):
+			for i in (range(0, len(resultList[trueDegree]))):
+				theNumberDisplay = resultList[trueDegree][i]
+				allNumberDisplay = allNumberDisplay + "\n" + theNumberDisplay
+			return allNumberDisplay
+
+		for i in (range(0, limit)):
+			if (len(preList[trueDegree]) > 0):
+				theNumberDisplay = preList[trueDegree][0]
+				del preList[trueDegree][0]
+			else:
+				theNumber = self.getRandom(len(candidateList))
+				theNumberDisplay = candidateList[theNumber - 1]
+				del candidateList[theNumber - 1]
+			allNumberDisplay = allNumberDisplay + "\n" + theNumberDisplay
+			SaveResult(degree, theNumberDisplay)
+			self.showNumber.SetLabel(theNumberDisplay)
+		return allNumberDisplay
 
 	def OnGetThirdButton(self, e):
-		self.timer.Stop()
-		theNumber = self.getRandom()
-		theNumberDisplay = str(theNumber).zfill(4)
-		self.showNumber.SetLabel(theNumberDisplay)
-		self.showResult("三等奖", theNumberDisplay)
+		allNumberDisplay = self.getThisDegreeResult(3, 3)
+		self.showResult("三等奖", allNumberDisplay)
 
 	def OnGetSecondButton(self, e):
-		dlg = wx.MessageDialog(self, "bb", "bbaaa", wx.OK)
-		dlg.ShowModal()
-		dlg.Destroy()
+		allNumberDisplay = self.getThisDegreeResult(2, 2)
+		self.showResult("二等奖", allNumberDisplay)
 
 	def OnGetFirstButton(self, e):
-		dlg = wx.MessageDialog(self, "cc", "cc", wx.OK)
-		dlg.ShowModal()
-		dlg.Destroy()
+		allNumberDisplay = self.getThisDegreeResult(1, 1)
+		self.showResult("一等奖", allNumberDisplay)
 
 	def OnGetSpecialButton(self, e):
 		dlg = wx.MessageDialog(self, "dd", "dd", wx.OK)
@@ -100,21 +132,68 @@ class MainPanel(wx.Panel):
 		dlg.ShowModal()
 		dlg.Destroy()
 
-	def getRandom(self):
-		theRandom = random.randint(1, 1000)
+	def getRandom(self, maxNumber):
+		theRandom = random.randint(1, maxNumber)
 		return theRandom
 
 	def showCurrentRollNumber(self):
-		currentNumber = self.getRandom()
-		willDisplay = str(currentNumber).zfill(4)
+		global showList
+		currentNumber = self.getRandom(len(showList))
+		willDisplay = showList[currentNumber - 1]
 		self.showNumber.SetLabel(willDisplay)
 
 	def OnTimer(self, e):
-		self.showCurrentRollNumber();
+		self.showCurrentRollNumber()
 
-#	def startRollNumber(self):
-		#self.timer.Start(100)
+def OpenList():
+	global candidateList
+	global preList
+	global candidateCount
+	fp = open("list.txt", "r")
+	for oneLine in fp.readlines():
+		txt = oneLine[:-1]
+		if (txt.count(',') == 1):
+			degree = int(txt[-1]) - 1
+			preNumber = txt[:-2]
+			preList[degree].append(preNumber)
+			showList.append(preNumber)
+		else:
+			candidateList.append(txt)
+			showList.append(txt)
+	fp.close()
 
+def ReadResultList():
+	global resultList
+	global candidateList
+	try:
+		fp = open("result.txt", "r")
+		for oneLine in fp.readlines():
+			txt = oneLine[:-1]
+			degree = int(txt[0])
+			resultNumber = txt[2:]
+			resultList[degree - 1].append(resultNumber)
+			if (resultNumber in candidateList):
+				candidateList.remove(resultNumber)
+	finally:
+		fp.close()
+
+def SaveResult(degree, theNumberDisplay):
+	global resultList
+	resultList[degree - 1].append(theNumberDisplay)
+	fp = open("result.txt", "a")
+	fp.writelines(str(degree) + "," + theNumberDisplay + "\n")
+	fp.close()
+
+candidateList = []
+preList = [[], [], []]
+resultList = [[], [], []]
+showList = []
+OpenList()
+ReadResultList()
+print showList
+print candidateList
+print preList
+print resultList
 app = wx.App(False)
 frame = MainFrame(None)
 app.MainLoop()
