@@ -3,6 +3,7 @@ import wx
 import random
 import threading
 import time
+import os
 
 class MainFrame(wx.Frame):
 	def __init__(self, parent):
@@ -165,17 +166,19 @@ def OpenList():
 def ReadResultList():
 	global resultList
 	global candidateList
-	try:
-		fp = open("result.txt", "r")
-		for oneLine in fp.readlines():
-			txt = oneLine[:-1]
-			degree = int(txt[0])
-			resultNumber = txt[2:]
-			resultList[degree - 1].append(resultNumber)
-			if (resultNumber in candidateList):
-				candidateList.remove(resultNumber)
-	finally:
-		fp.close()
+
+	if (not os.path.isfile("result")):
+		return
+
+	fp = open("result.txt", "r+")
+	for oneLine in fp.readlines():
+		txt = oneLine[:-1]
+		degree = int(txt[0])
+		resultNumber = txt[2:]
+		resultList[degree - 1].append(resultNumber)
+		if (resultNumber in candidateList):
+			candidateList.remove(resultNumber)
+	fp.close()
 
 def SaveResult(degree, theNumberDisplay):
 	global resultList
