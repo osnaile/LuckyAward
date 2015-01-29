@@ -1,4 +1,4 @@
-# coding=utf-8
+# coding:utf-8
 import wx
 import random
 import threading
@@ -7,7 +7,7 @@ import os
 
 class MainFrame(wx.Frame):
 	def __init__(self, parent):
-		wx.Frame.__init__(self, parent, title="抽奖", size=(800, 600))
+		wx.Frame.__init__(self, parent, title=u"抽奖", size=(800, 600))
 		self.CreateStatusBar()
 
 		filemenu = wx.Menu()
@@ -43,23 +43,23 @@ class MainPanel(wx.Panel):
 		to_bmp_image = wx.Image(image_file, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 		self.bitmap = wx.StaticBitmap(self, -1, to_bmp_image, (0, 0))
 
-		awardMemoStr = "奖项说明：\n\n三等奖3名：华为手机荣耀6Plus\n二等奖2名：华为手机MATE7\n一等奖1名：苹果iPad Air 2\n特等奖1名：神秘大礼"
+		awardMemoStr = u"奖项说明：\n\n三等奖3名：华为手机荣耀6Plus\n二等奖2名：华为手机MATE7\n一等奖1名：苹果iPad Air 2\n特等奖1名：神秘大礼"
 		self.awardMemo = wx.StaticText(self, label=awardMemoStr, pos=(20, 30))
 		self.awardMemo.SetForegroundColour("Yellow")
 
-		self.startRollNumber = wx.Button(self, label="开始", pos=(120, 300))
+		self.startRollNumber = wx.Button(self, label=u"开始", pos=(120, 300))
 		self.Bind(wx.EVT_BUTTON, self.OnStartRollNumber, self.startRollNumber)
 
-		self.GetThirdButton = wx.Button(self, label="抽取三等奖", pos=(120, 500))
+		self.GetThirdButton = wx.Button(self, label=u"抽取三等奖", pos=(120, 500))
 		self.Bind(wx.EVT_BUTTON, self.OnGetThirdButton, self.GetThirdButton)
 
-		self.GetSecondButton = wx.Button(self, label="抽取二等奖", pos=(240, 500))
+		self.GetSecondButton = wx.Button(self, label=u"抽取二等奖", pos=(240, 500))
 		self.Bind(wx.EVT_BUTTON, self.OnGetSecondButton, self.GetSecondButton)
 
-		self.GetFirstButton = wx.Button(self, label="抽取一等奖", pos=(360, 500))
+		self.GetFirstButton = wx.Button(self, label=u"抽取一等奖", pos=(360, 500))
 		self.Bind(wx.EVT_BUTTON, self.OnGetFirstButton, self.GetFirstButton)
 
-		self.GetSpecialButton = wx.Button(self, label="抽取特等奖", pos=(480, 500))
+		self.GetSpecialButton = wx.Button(self, label=u"抽取特等奖", pos=(480, 500))
 		self.Bind(wx.EVT_BUTTON, self.OnGetSpecialButton, self.GetSpecialButton)
 
 		self.showNumber = wx.StaticText(self, label="0000", pos=(240, 220))
