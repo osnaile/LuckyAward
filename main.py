@@ -39,15 +39,15 @@ class MainPanel(wx.Panel):
 	def __init__(self, parent, id):
 		wx.Panel.__init__(self, parent, id)
 
-		image_file = "background.jpg"
-		to_bmp_image = wx.Image(image_file, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
-		self.bitmap = wx.StaticBitmap(self, -1, to_bmp_image, (0, 0))
+		#image_file = "background.jpg"
+		#to_bmp_image = wx.Image(image_file, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+		#self.bitmap = wx.StaticBitmap(self, -1, to_bmp_image, (0, 0))
 
 		awardMemoStr = u"奖项说明：\n\n三等奖3名：华为手机荣耀6Plus\n二等奖2名：华为手机MATE7\n一等奖1名：苹果iPad Air 2\n特等奖1名：神秘大礼"
 		self.awardMemo = wx.StaticText(self, label=awardMemoStr, pos=(20, 30))
-		self.awardMemo.SetForegroundColour("Yellow")
+		self.awardMemo.SetForegroundColour("Red")
 
-		self.startRollNumber = wx.Button(self, label=u"开始", pos=(120, 300))
+		self.startRollNumber = wx.Button(self, label=u"开始", pos=(0, 0))
 		self.Bind(wx.EVT_BUTTON, self.OnStartRollNumber, self.startRollNumber)
 
 		self.GetThirdButton = wx.Button(self, label=u"抽取三等奖", pos=(120, 500))
@@ -64,12 +64,12 @@ class MainPanel(wx.Panel):
 
 		self.showNumber = wx.StaticText(self, label="0000", pos=(240, 220))
 		showNumberFont = wx.Font(128, wx.FONTFAMILY_DEFAULT, wx.ITALIC, wx.FONTWEIGHT_BOLD)
-		self.showNumber.SetForegroundColour("Yellow")
+		self.showNumber.SetForegroundColour("Red")
 	        self.showNumber.SetFont(showNumberFont)
 
-		self.GetThirdButton.Enable(False)
-		self.GetSecondButton.Enable(False)
-		self.GetFirstButton.Enable(False)
+		#self.GetThirdButton.Enable(False)
+		#self.GetSecondButton.Enable(False)
+		#self.GetFirstButton.Enable(False)
 
 		self.timer = wx.Timer(self)
 		self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
@@ -113,15 +113,15 @@ class MainPanel(wx.Panel):
 
 	def OnGetThirdButton(self, e):
 		allNumberDisplay = self.getThisDegreeResult(3, 3)
-		self.showResult("三等奖", allNumberDisplay)
+		self.showResult(u"三等奖", allNumberDisplay)
 
 	def OnGetSecondButton(self, e):
 		allNumberDisplay = self.getThisDegreeResult(2, 2)
-		self.showResult("二等奖", allNumberDisplay)
+		self.showResult(u"二等奖", allNumberDisplay)
 
 	def OnGetFirstButton(self, e):
 		allNumberDisplay = self.getThisDegreeResult(1, 1)
-		self.showResult("一等奖", allNumberDisplay)
+		self.showResult(u"一等奖", allNumberDisplay)
 
 	def OnGetSpecialButton(self, e):
 		dlg = wx.MessageDialog(self, "dd", "dd", wx.OK)
