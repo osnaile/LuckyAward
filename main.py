@@ -4,6 +4,7 @@ import random
 import threading
 import time
 import os
+import codecs
 
 class MainFrame(wx.Frame):
 	def __init__(self, parent):
@@ -47,7 +48,7 @@ class MainPanel(wx.Panel):
 		self.awardMemo = wx.StaticText(self, label=awardMemoStr, pos=(20, 30))
 		self.awardMemo.SetForegroundColour("Red")
 
-		self.startRollNumber = wx.Button(self, label=u"开始", pos=(0, 0))
+		self.startRollNumber = wx.Button(self, label=u"开始", pos=(120, 400))
 		self.Bind(wx.EVT_BUTTON, self.OnStartRollNumber, self.startRollNumber)
 
 		self.GetThirdButton = wx.Button(self, label=u"抽取三等奖", pos=(120, 500))
@@ -62,14 +63,14 @@ class MainPanel(wx.Panel):
 		self.GetSpecialButton = wx.Button(self, label=u"抽取特等奖", pos=(480, 500))
 		self.Bind(wx.EVT_BUTTON, self.OnGetSpecialButton, self.GetSpecialButton)
 
-		self.showNumber = wx.StaticText(self, label="0000", pos=(240, 220))
-		showNumberFont = wx.Font(128, wx.FONTFAMILY_DEFAULT, wx.ITALIC, wx.FONTWEIGHT_BOLD)
+		self.showNumber = wx.StaticText(self, label="0000", pos=(80, 220))
+		showNumberFont = wx.Font(98, wx.FONTFAMILY_DEFAULT, wx.ITALIC, wx.FONTWEIGHT_BOLD)
 		self.showNumber.SetForegroundColour("Red")
 	        self.showNumber.SetFont(showNumberFont)
 
-		#self.GetThirdButton.Enable(False)
-		#self.GetSecondButton.Enable(False)
-		#self.GetFirstButton.Enable(False)
+		self.GetThirdButton.Enable(False)
+		self.GetSecondButton.Enable(False)
+		self.GetFirstButton.Enable(False)
 
 		self.timer = wx.Timer(self)
 		self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
@@ -150,7 +151,7 @@ def OpenList():
 	global candidateList
 	global preList
 	global candidateCount
-	fp = open("list.txt", "r")
+	fp = codecs.open("list.txt", "r", "utf-8")
 	for oneLine in fp.readlines():
 		txt = oneLine[:-1]
 		if (txt.count(',') == 1):
@@ -171,7 +172,7 @@ def ReadResultList():
 		print "No Result File!"
 		return
 
-	fp = open("result.txt", "r+")
+	fp = codecs.open("result.txt", "r+", "utf-8")
 	for oneLine in fp.readlines():
 		txt = oneLine[:-1]
 		degree = int(txt[0])
@@ -184,8 +185,10 @@ def ReadResultList():
 def SaveResult(degree, theNumberDisplay):
 	global resultList
 	resultList[degree - 1].append(theNumberDisplay)
-	fp = open("result.txt", "a")
-	fp.writelines(str(degree) + "," + theNumberDisplay + "\n")
+	fp = codecs.open("result.txt", "a", "utf-8")
+	print str(degree) + "," + theNumberDisplay
+	fp.write(str(degree) + "," + theNumberDisplay)
+	fp.write("\n")
 	fp.close()
 
 candidateList = []
