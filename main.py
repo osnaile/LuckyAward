@@ -45,28 +45,31 @@ class MainPanel(wx.Panel):
 		#self.bitmap = wx.StaticBitmap(self, -1, to_bmp_image, (0, 0))
 
 		awardMemoStr = u"奖项说明：\n\n三等奖3名：华为手机荣耀6Plus\n二等奖2名：华为手机MATE7\n一等奖1名：苹果iPad Air 2\n特等奖1名：神秘大礼"
+		awardMemoStr = u"VOC年会大抽奖"
 		self.awardMemo = wx.StaticText(self, label=awardMemoStr, pos=(20, 30))
 		self.awardMemo.SetForegroundColour("Red")
+		awardMemoFont = wx.Font(60, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD)
+		self.awardMemo.SetFont(awardMemoFont)
 
 		self.startRollNumber = wx.Button(self, label=u"开始", pos=(120, 400))
 		self.Bind(wx.EVT_BUTTON, self.OnStartRollNumber, self.startRollNumber)
 
-		self.GetThirdButton = wx.Button(self, label=u"抽取三等奖", pos=(120, 500))
+		self.GetThirdButton = wx.Button(self, label=u"抽取三等奖", pos=(120, 450))
 		self.Bind(wx.EVT_BUTTON, self.OnGetThirdButton, self.GetThirdButton)
 
-		self.GetSecondButton = wx.Button(self, label=u"抽取二等奖", pos=(240, 500))
+		self.GetSecondButton = wx.Button(self, label=u"抽取二等奖", pos=(240, 450))
 		self.Bind(wx.EVT_BUTTON, self.OnGetSecondButton, self.GetSecondButton)
 
-		self.GetFirstButton = wx.Button(self, label=u"抽取一等奖", pos=(360, 500))
+		self.GetFirstButton = wx.Button(self, label=u"抽取一等奖", pos=(360, 450))
 		self.Bind(wx.EVT_BUTTON, self.OnGetFirstButton, self.GetFirstButton)
 
-		self.GetSpecialButton = wx.Button(self, label=u"抽取特等奖", pos=(480, 500))
-		self.Bind(wx.EVT_BUTTON, self.OnGetSpecialButton, self.GetSpecialButton)
+		#self.GetSpecialButton = wx.Button(self, label=u"抽取特等奖", pos=(480, 500))
+		#self.Bind(wx.EVT_BUTTON, self.OnGetSpecialButton, self.GetSpecialButton)
 
 		self.showNumber = wx.StaticText(self, label="0000", pos=(80, 220))
-		showNumberFont = wx.Font(98, wx.FONTFAMILY_DEFAULT, wx.ITALIC, wx.FONTWEIGHT_BOLD)
+		showNumberFont = wx.Font(98, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD)
 		self.showNumber.SetForegroundColour("Red")
-	        self.showNumber.SetFont(showNumberFont)
+		self.showNumber.SetFont(showNumberFont)
 
 		self.GetThirdButton.Enable(False)
 		self.GetSecondButton.Enable(False)
@@ -96,7 +99,8 @@ class MainPanel(wx.Panel):
 		if (len(resultList[trueDegree]) > 0):
 			for i in (range(0, len(resultList[trueDegree]))):
 				theNumberDisplay = resultList[trueDegree][i]
-				allNumberDisplay = allNumberDisplay + "\n" + theNumberDisplay
+				allNumberDisplay = allNumberDisplay + "\n\n" + theNumberDisplay
+				self.showNumber.SetLabel(theNumberDisplay)
 			return allNumberDisplay
 		
 		for i in (range(0, limit)):
@@ -107,7 +111,7 @@ class MainPanel(wx.Panel):
 				theNumber = self.getRandom(len(candidateList))
 				theNumberDisplay = candidateList[theNumber - 1]
 				del candidateList[theNumber - 1]
-			allNumberDisplay = allNumberDisplay + "\n" + theNumberDisplay
+			allNumberDisplay = allNumberDisplay + "\n\n" + theNumberDisplay
 			SaveResult(degree, theNumberDisplay)
 			self.showNumber.SetLabel(theNumberDisplay)
 		return allNumberDisplay
@@ -153,7 +157,7 @@ def OpenList():
 	global candidateCount
 	fp = codecs.open("list.txt", "r", "utf-8")
 	for oneLine in fp.readlines():
-		txt = oneLine[:-1]
+		txt = oneLine[:-1].rstrip()
 		if (txt.count(',') == 1):
 			degree = int(txt[-1]) - 1
 			preNumber = txt[:-2]
@@ -169,7 +173,7 @@ def ReadResultList():
 	global candidateList
 
 	if (not os.path.isfile("result.txt")):
-		print "No Result File!"
+		#print "No Result File!"
 		return
 
 	fp = codecs.open("result.txt", "r+", "utf-8")
@@ -186,7 +190,7 @@ def SaveResult(degree, theNumberDisplay):
 	global resultList
 	resultList[degree - 1].append(theNumberDisplay)
 	fp = codecs.open("result.txt", "a", "utf-8")
-	print str(degree) + "," + theNumberDisplay
+	#print str(degree) + "," + theNumberDisplay
 	fp.write(str(degree) + "," + theNumberDisplay)
 	fp.write("\n")
 	fp.close()
@@ -197,10 +201,10 @@ resultList = [[], [], []]
 showList = []
 OpenList()
 ReadResultList()
-print showList
-print candidateList
-print preList
-print resultList
+#print showList
+#print candidateList
+#print preList
+#print resultList
 app = wx.App(False)
 frame = MainFrame(None)
 app.MainLoop()
