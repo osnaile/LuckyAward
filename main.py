@@ -97,7 +97,7 @@ class MainPanel(wx.Panel):
 				theNumberDisplay = resultList[trueDegree][i]
 				allNumberDisplay = allNumberDisplay + "\n" + theNumberDisplay
 			return allNumberDisplay
-
+		
 		for i in (range(0, limit)):
 			if (len(preList[trueDegree]) > 0):
 				theNumberDisplay = preList[trueDegree][0]
@@ -167,7 +167,8 @@ def ReadResultList():
 	global resultList
 	global candidateList
 
-	if (not os.path.isfile("result")):
+	if (not os.path.isfile("result.txt")):
+		print "No Result File!"
 		return
 
 	fp = open("result.txt", "r+")
