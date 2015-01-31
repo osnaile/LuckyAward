@@ -63,8 +63,8 @@ class MainPanel(wx.Panel):
 		self.GetFirstButton = wx.Button(self, label=u"抽取一等奖", pos=(360, 450))
 		self.Bind(wx.EVT_BUTTON, self.OnGetFirstButton, self.GetFirstButton)
 
-		#self.GetSpecialButton = wx.Button(self, label=u"抽取特等奖", pos=(480, 500))
-		#self.Bind(wx.EVT_BUTTON, self.OnGetSpecialButton, self.GetSpecialButton)
+		self.GetSpecialButton = wx.Button(self, label=u"抽取特等奖", pos=(480, 450))
+		self.Bind(wx.EVT_BUTTON, self.OnGetSpecialButton, self.GetSpecialButton)
 
 		self.showNumber = wx.StaticText(self, label="0000", pos=(80, 220))
 		showNumberFont = wx.Font(98, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD)
@@ -74,6 +74,7 @@ class MainPanel(wx.Panel):
 		self.GetThirdButton.Enable(False)
 		self.GetSecondButton.Enable(False)
 		self.GetFirstButton.Enable(False)
+		self.GetSpecialButton.Enable(False)
 
 		self.timer = wx.Timer(self)
 		self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
@@ -83,6 +84,7 @@ class MainPanel(wx.Panel):
 		self.GetThirdButton.Enable(True)
 		self.GetSecondButton.Enable(True)
 		self.GetFirstButton.Enable(True)
+		self.GetSpecialButton.Enable(True)
 
 	def getThisDegreeResult(self, degree, limit):
 		global candidateList
@@ -92,29 +94,20 @@ class MainPanel(wx.Panel):
 		self.GetThirdButton.Enable(False)
 		self.GetSecondButton.Enable(False)
 		self.GetFirstButton.Enable(False)
+		self.GetSpecialButton.Enable(False)
 
-		allNumberDisplay = ""
 		trueDegree = degree - 1
 
-		if (len(resultList[trueDegree]) > 0):
-			for i in (range(0, len(resultList[trueDegree]))):
-				theNumberDisplay = resultList[trueDegree][i]
-				allNumberDisplay = allNumberDisplay + "\n\n" + theNumberDisplay
-				self.showNumber.SetLabel(theNumberDisplay)
-			return allNumberDisplay
-		
-		for i in (range(0, limit)):
-			if (len(preList[trueDegree]) > 0):
-				theNumberDisplay = preList[trueDegree][0]
-				del preList[trueDegree][0]
-			else:
-				theNumber = self.getRandom(len(candidateList))
-				theNumberDisplay = candidateList[theNumber - 1]
-				del candidateList[theNumber - 1]
-			allNumberDisplay = allNumberDisplay + "\n\n" + theNumberDisplay
-			SaveResult(degree, theNumberDisplay)
-			self.showNumber.SetLabel(theNumberDisplay)
-		return allNumberDisplay
+		if (len(preList[trueDegree]) > 0):
+			theNumberDisplay = preList[trueDegree][0]
+			del preList[trueDegree][0]
+		else:
+			theNumber = self.getRandom(len(candidateList))
+			theNumberDisplay = candidateList[theNumber - 1]
+			del candidateList[theNumber - 1]
+		SaveResult(degree, theNumberDisplay)
+		self.showNumber.SetLabel(theNumberDisplay)
+		return theNumberDisplay
 
 	def OnGetThirdButton(self, e):
 		allNumberDisplay = self.getThisDegreeResult(3, 3)
@@ -129,9 +122,8 @@ class MainPanel(wx.Panel):
 		self.showResult(u"一等奖", allNumberDisplay)
 
 	def OnGetSpecialButton(self, e):
-		dlg = wx.MessageDialog(self, "dd", "dd", wx.OK)
-		dlg.ShowModal()
-		dlg.Destroy()
+		allNumberDisplay = self.getThisDegreeResult(4, 1)
+		self.showResult(u"特等奖", allNumberDisplay)
 
 	def showResult(self, title, msg):
 		dlg = wx.MessageDialog(self, msg, title, wx.OK)
@@ -196,8 +188,8 @@ def SaveResult(degree, theNumberDisplay):
 	fp.close()
 
 candidateList = []
-preList = [[], [], []]
-resultList = [[], [], []]
+preList = [[], [], [], []]
+resultList = [[], [], [], []]
 showList = []
 OpenList()
 ReadResultList()
