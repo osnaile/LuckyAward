@@ -1,0 +1,12 @@
+3,BBBBB
+3,DDDDD
+3,CCCCC
+3,ccc
+3,bbb
+3,ddd
+3,sdafasdfa
+4,ddd
+4,aaa
+1,fdsf
+1,asdfsdaf
+4,ddd

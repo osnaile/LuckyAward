@@ -40,9 +40,9 @@ class MainPanel(wx.Panel):
 	def __init__(self, parent, id):
 		wx.Panel.__init__(self, parent, id)
 
-		image_file = "background.jpg"
-		to_bmp_image = wx.Image(image_file, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
-		self.bitmap = wx.StaticBitmap(self, -1, to_bmp_image, (0, 0))
+		#image_file = "background.jpg"
+		#to_bmp_image = wx.Image(image_file, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+		#self.bitmap = wx.StaticBitmap(self, -1, to_bmp_image, (0, 0))
 
 		awardMemoStr = u"奖项说明：\n\n三等奖3名：华为手机荣耀6Plus\n二等奖2名：华为手机MATE7\n一等奖1名：苹果iPad Air 2\n特等奖1名：神秘大礼"
 		awardMemoStr = u"VOC年会大抽奖"
