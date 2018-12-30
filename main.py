@@ -147,7 +147,7 @@ def OpenList():
 	global candidateList
 	global preList
 	global candidateCount
-	fp = codecs.open("list.txt", "r", "utf-8")
+	fp = codecs.open("data/list.txt", "r", "utf-8")
 	for oneLine in fp.readlines():
 		txt = oneLine[:-1].rstrip()
 		if (txt.count(',') == 1):
@@ -164,11 +164,11 @@ def ReadResultList():
 	global resultList
 	global candidateList
 
-	if (not os.path.isfile("result.txt")):
+	if (not os.path.isfile("data/result.txt")):
 		#print "No Result File!"
 		return
 
-	fp = codecs.open("result.txt", "r+", "utf-8")
+	fp = codecs.open("data/result.txt", "r+", "utf-8")
 	for oneLine in fp.readlines():
 		txt = oneLine[:-1]
 		degree = int(txt[0])
@@ -181,7 +181,7 @@ def ReadResultList():
 def SaveResult(degree, theNumberDisplay):
 	global resultList
 	resultList[degree - 1].append(theNumberDisplay)
-	fp = codecs.open("result.txt", "a", "utf-8")
+	fp = codecs.open("data/result.txt", "a", "utf-8")
 	#print str(degree) + "," + theNumberDisplay
 	fp.write(str(degree) + "," + theNumberDisplay)
 	fp.write("\n")
