@@ -44,8 +44,7 @@ class MainPanel(wx.Panel):
 		to_bmp_image = wx.Image(image_file, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 		self.bitmap = wx.StaticBitmap(self, -1, to_bmp_image, (0, 0))
 
-		awardMemoStr = u"奖项说明：\n\n三等奖3名：华为手机荣耀6Plus\n二等奖2名：华为手机MATE7\n一等奖1名：苹果iPad Air 2\n特等奖1名：神秘大礼"
-		awardMemoStr = u"VOC年会大抽奖"
+		awardMemoStr = u"幸运大抽奖"
 		self.awardMemo = wx.StaticText(self, label=awardMemoStr, pos=(20, 30))
 		self.awardMemo.SetForegroundColour("Red")
 		awardMemoFont = wx.Font(60, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD)
@@ -170,6 +169,8 @@ def ReadResultList():
 
 	fp = codecs.open("data/result.txt", "r+", "utf-8")
 	for oneLine in fp.readlines():
+		if oneLine == "":
+			continue
 		txt = oneLine[:-1]
 		degree = int(txt[0])
 		resultNumber = txt[2:]
