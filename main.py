@@ -50,6 +50,9 @@ class MainPanel(wx.Panel):
 		awardMemoFont = wx.Font(60, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD)
 		self.awardMemo.SetFont(awardMemoFont)
 
+		countForThisTimeStr = u"本次抽出"
+		self.countForThisTime = wx.StaticText(self, label=countForThisTimeStr, pos=(20, 50))
+
 		self.startRollNumber = wx.Button(self, label=u"开始", pos=(120, 400))
 		self.Bind(wx.EVT_BUTTON, self.OnStartRollNumber, self.startRollNumber)
 
