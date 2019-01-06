@@ -52,6 +52,8 @@ class MainPanel(wx.Panel):
 
 		countForThisTimeStr = u"本次抽出"
 		self.countForThisTime = wx.StaticText(self, label=countForThisTimeStr, pos=(20, 50))
+		inputForCount = wx.TextCtrl(self, -1, u"50", size=(175, -1), style=wx.TE_CENTRE)
+		inputForCount.SetInsertionPoint(0)
 
 		self.startRollNumber = wx.Button(self, label=u"开始", pos=(120, 400))
 		self.Bind(wx.EVT_BUTTON, self.OnStartRollNumber, self.startRollNumber)
@@ -98,18 +100,21 @@ class MainPanel(wx.Panel):
 		self.GetFirstButton.Enable(False)
 		self.GetSpecialButton.Enable(False)
 
+		allNumberDisplay = ""
 		trueDegree = degree - 1
 
-		if (len(preList[trueDegree]) > 0):
-			theNumberDisplay = preList[trueDegree][0]
-			del preList[trueDegree][0]
-		else:
-			theNumber = self.getRandom(len(candidateList))
-			theNumberDisplay = candidateList[theNumber - 1]
-			del candidateList[theNumber - 1]
-		SaveResult(degree, theNumberDisplay)
-		self.showNumber.SetLabel(theNumberDisplay)
-		return theNumberDisplay
+		for i in (range(0, limit)):
+			if (len(preList[trueDegree]) > 0):
+				theNumberDisplay = preList[trueDegree][0]
+				del preList[trueDegree][0]
+			else:
+				theNumber = self.getRandom(len(candidateList))
+				theNumberDisplay = candidateList[theNumber - 1]
+				del candidateList[theNumber - 1]
+			allNumberDisplay = allNumberDisplay + "\n\n" + theNumberDisplay
+			SaveResult(degree, theNumberDisplay)
+			self.showNumber.SetLabel(theNumberDisplay)
+		return allNumberDisplay
 
 	def OnGetThirdButton(self, e):
 		allNumberDisplay = self.getThisDegreeResult(3, 3)
