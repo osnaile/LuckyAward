@@ -51,11 +51,11 @@ class MainPanel(wx.Panel):
 		self.awardMemo.SetFont(awardMemoFont)
 
 		countForThisTimeStr = u"本次抽出"
-		self.countForThisTime = wx.StaticText(self, label=countForThisTimeStr, pos=(20, 50))
-		inputForCount = wx.TextCtrl(self, -1, u"50", size=(175, -1), style=wx.TE_CENTRE)
+		self.countForThisTime = wx.StaticText(self, label=countForThisTimeStr, pos=(80, 400))
+		inputForCount = wx.TextCtrl(self, -1, u"50", size=(40, -1), style=wx.TE_CENTRE, pos=(150, 400))
 		inputForCount.SetInsertionPoint(0)
 
-		self.startRollNumber = wx.Button(self, label=u"开始", pos=(120, 400))
+		self.startRollNumber = wx.Button(self, label=u"开始", pos=(200, 400))
 		self.Bind(wx.EVT_BUTTON, self.OnStartRollNumber, self.startRollNumber)
 
 		self.GetThirdButton = wx.Button(self, label=u"抽取三等奖", pos=(120, 450))
