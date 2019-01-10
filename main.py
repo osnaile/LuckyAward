@@ -52,11 +52,11 @@ class MainPanel(wx.Panel):
 
 		countForThisTimeStr = u"本次抽出"
 		self.countForThisTime = wx.StaticText(self, label=countForThisTimeStr, pos=(80, 400))
-		inputForCount = wx.TextCtrl(self, -1, u"50", size=(40, -1), style=wx.TE_CENTRE, pos=(150, 400))
-		inputForCount.SetInsertionPoint(0)
+		self.inputForCount = wx.TextCtrl(self, -1, u"50", size=(40, -1), style=wx.TE_CENTRE, pos=(150, 400))
+		self.inputForCount.SetInsertionPoint(0)
 
-		self.startRollNumber = wx.Button(self, label=u"开始", pos=(200, 400))
-		self.Bind(wx.EVT_BUTTON, self.OnStartRollNumber, self.startRollNumber)
+		self.stopRollNumber = wx.Button(self, label=u"停", pos=(200, 400))
+		self.Bind(wx.EVT_BUTTON, self.OnStopRollNumber, self.stopRollNumber)
 
 		self.GetThirdButton = wx.Button(self, label=u"抽取三等奖", pos=(120, 450))
 		self.Bind(wx.EVT_BUTTON, self.OnGetThirdButton, self.GetThirdButton)
@@ -75,30 +75,33 @@ class MainPanel(wx.Panel):
 		self.showNumber.SetForegroundColour("Red")
 		self.showNumber.SetFont(showNumberFont)
 
-		self.GetThirdButton.Enable(False)
-		self.GetSecondButton.Enable(False)
-		self.GetFirstButton.Enable(False)
-		self.GetSpecialButton.Enable(False)
-
-		self.timer = wx.Timer(self)
-		self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
-
-	def OnStartRollNumber(self, e):
-		self.timer.Start(100)
 		self.GetThirdButton.Enable(True)
 		self.GetSecondButton.Enable(True)
 		self.GetFirstButton.Enable(True)
 		self.GetSpecialButton.Enable(True)
+		self.stopRollNumber.Enable(False)
+
+		self.timer = wx.Timer(self)
+		self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
+
+	def OnStopRollNumber(self, e):
+		global currentLevel
+		global currentMaxCount
+		allNumberDisplay = self.getThisDegreeResult(currentLevel, currentMaxCount)
+		self.showResult(currentLevel, allNumberDisplay)
+		currentLevel = 0
+		currentMaxCount = 0
+		self.GetThirdButton.Enable(True)
+		self.GetSecondButton.Enable(True)
+		self.GetFirstButton.Enable(True)
+		self.GetSpecialButton.Enable(True)
+		self.stopRollNumber.Enable(False)
 
 	def getThisDegreeResult(self, degree, limit):
 		global candidateList
 		global preList
 		global resultList
 		self.timer.Stop()
-		self.GetThirdButton.Enable(False)
-		self.GetSecondButton.Enable(False)
-		self.GetFirstButton.Enable(False)
-		self.GetSpecialButton.Enable(False)
 
 		allNumberDisplay = ""
 		trueDegree = degree - 1
@@ -116,23 +119,36 @@ class MainPanel(wx.Panel):
 			self.showNumber.SetLabel(theNumberDisplay)
 		return allNumberDisplay
 
+	def startRoll(self, degree, limit):
+		global currentLevel
+		global currentMaxCount
+		currentLevel = degree
+		currentMaxCount = limit
+		self.timer.Start(100)
+		self.stopRollNumber.Enable(True)
+		self.GetThirdButton.Enable(False)
+		self.GetSecondButton.Enable(False)
+		self.GetFirstButton.Enable(False)
+		self.GetSpecialButton.Enable(False)
+
+	def getInputCount(self):
+		return int(self.inputForCount.GetValue())
+
 	def OnGetThirdButton(self, e):
-		allNumberDisplay = self.getThisDegreeResult(3, 3)
-		self.showResult(u"三等奖", allNumberDisplay)
+		self.startRoll(3, self.getInputCount())
 
 	def OnGetSecondButton(self, e):
-		allNumberDisplay = self.getThisDegreeResult(2, 2)
-		self.showResult(u"二等奖", allNumberDisplay)
+		self.startRoll(2, self.getInputCount())
 
 	def OnGetFirstButton(self, e):
-		allNumberDisplay = self.getThisDegreeResult(1, 1)
-		self.showResult(u"一等奖", allNumberDisplay)
+		self.startRoll(1, self.getInputCount()) 
 
 	def OnGetSpecialButton(self, e):
-		allNumberDisplay = self.getThisDegreeResult(4, 1)
-		self.showResult(u"特等奖", allNumberDisplay)
+		self.startRoll(0, self.getInputCount())
 
-	def showResult(self, title, msg):
+	def showResult(self, level, msg):
+		global arrLevel;
+		title = arrLevel[level][1]
 		dlg = wx.MessageDialog(self, msg, title, wx.OK)
 		dlg.ShowModal()
 		dlg.Destroy()
@@ -143,8 +159,8 @@ class MainPanel(wx.Panel):
 
 	def showCurrentRollNumber(self):
 		global showList
-		currentNumber = self.getRandom(len(showList))
-		willDisplay = showList[currentNumber - 1]
+		currentNumber = self.getRandom(len(candidateList))
+		willDisplay = candidateList[currentNumber - 1]
 		self.showNumber.SetLabel(willDisplay)
 
 	def OnTimer(self, e):
@@ -206,6 +222,12 @@ ReadResultList()
 #print candidateList
 #print preList
 #print resultList
+
+arrLevel = [[0, u"特等奖"], [1, u"一等奖"], [2, u"二等奖"], [3, u"三等奖"], [4, u"四等奖"]]
+
+currentMaxCount = 0
+currentLevel = 0
+
 app = wx.App(False)
 frame = MainFrame(None)
 app.MainLoop()
