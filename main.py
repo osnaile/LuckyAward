@@ -23,116 +23,127 @@ class MainFrame(wx.Frame):
 		menuBar.Append(filemenu, "&File")
 		self.SetMenuBar(menuBar)
 
-		panel = MainPanel(self, -1)
-
-		self.Show(True)
-
-	def OnAbout(self, event):
-		dlg = wx.MessageDialog(self, "A small text editor", "About Sample Editor", wx.OK)
-		dlg.ShowModal()
-		dlg.Destroy()
-
-	def OnExit(self, event):
-		self.Close(True)
-
-
-class MainPanel(wx.Panel):
-	def __init__(self, parent, id):
-		wx.Panel.__init__(self, parent, id)
-
-		image_file = "background.jpg"
-		to_bmp_image = wx.Image(image_file, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
-		self.bitmap = wx.StaticBitmap(self, -1, to_bmp_image, (0, 0))
+		self.panel = wx.Panel(self, -1)
+		self.panel.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBack)
 
 		awardMemoStr = u"幸运大抽奖"
-		self.awardMemo = wx.StaticText(self, label=awardMemoStr, pos=(20, 30))
+		self.awardMemo = wx.StaticText(self.panel, label=awardMemoStr, pos=(20, 30))
 		self.awardMemo.SetForegroundColour("Red")
 		awardMemoFont = wx.Font(60, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD)
 		self.awardMemo.SetFont(awardMemoFont)
 
 		countForThisTimeStr = u"本次抽出"
-		self.countForThisTime = wx.StaticText(self, label=countForThisTimeStr, pos=(80, 400))
-		self.inputForCount = wx.TextCtrl(self, -1, u"50", size=(40, -1), style=wx.TE_CENTRE, pos=(150, 400))
+		self.countForThisTime = wx.StaticText(self.panel, label=countForThisTimeStr, pos=(80, 400))
+		self.inputForCount = wx.TextCtrl(self.panel, -1, u"50", size=(40, -1), style=wx.TE_CENTRE, pos=(150, 400))
 		self.inputForCount.SetInsertionPoint(0)
 
-		self.stopRollNumber = wx.Button(self, label=u"停", pos=(200, 400))
+		self.stopRollNumber = wx.Button(self.panel, label=u"停", pos=(200, 400))
 		self.Bind(wx.EVT_BUTTON, self.OnStopRollNumber, self.stopRollNumber)
 
-		self.GetThirdButton = wx.Button(self, label=u"抽取三等奖", pos=(120, 450))
+		self.GetForthButton = wx.Button(self.panel, label=u"抽取四等奖", pos=(120, 450), size=(100, 20))
+		self.Bind(wx.EVT_BUTTON, self.OnGetForthButton, self.GetForthButton)
+
+		self.GetThirdButton = wx.Button(self.panel, label=u"抽取三等奖", pos=(120, 450))
 		self.Bind(wx.EVT_BUTTON, self.OnGetThirdButton, self.GetThirdButton)
 
-		self.GetSecondButton = wx.Button(self, label=u"抽取二等奖", pos=(240, 450))
+		self.GetSecondButton = wx.Button(self.panel, label=u"抽取二等奖", pos=(240, 450))
 		self.Bind(wx.EVT_BUTTON, self.OnGetSecondButton, self.GetSecondButton)
 
-		self.GetFirstButton = wx.Button(self, label=u"抽取一等奖", pos=(360, 450))
+		self.GetFirstButton = wx.Button(self.panel, label=u"抽取一等奖", pos=(360, 450))
 		self.Bind(wx.EVT_BUTTON, self.OnGetFirstButton, self.GetFirstButton)
 
-		self.GetSpecialButton = wx.Button(self, label=u"抽取特等奖", pos=(480, 450))
+		self.GetSpecialButton = wx.Button(self.panel, label=u"抽取特等奖", pos=(480, 450))
 		self.Bind(wx.EVT_BUTTON, self.OnGetSpecialButton, self.GetSpecialButton)
 
-		self.showNumber = wx.StaticText(self, label="0000", pos=(80, 220))
+		self.showNumber = wx.StaticText(self.panel, label="0000", pos=(80, 220))
 		showNumberFont = wx.Font(98, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD)
 		self.showNumber.SetForegroundColour("Red")
 		self.showNumber.SetFont(showNumberFont)
 
+		self.GetForthButton.Enable(True)
 		self.GetThirdButton.Enable(True)
 		self.GetSecondButton.Enable(True)
 		self.GetFirstButton.Enable(True)
 		self.GetSpecialButton.Enable(True)
 		self.stopRollNumber.Enable(False)
 
+		self.Bind(wx.EVT_CHAR_HOOK, self.OnKey)
+		
 		self.timer = wx.Timer(self)
 		self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
+		self.rollCount = 0
 
+		self.Show(True)
+		
+	def OnKey(self, event):
+		code = event.GetKeyCode()
+		print(code)
+		if (code == 366) or (code == 367) or (code == 66):
+			self.StopRoll()
+		
+	def OnEraseBack(self, event):
+		dc = event.GetDC()
+		if not dc:
+			dc = wx.ClientDC(self)
+			rect = self.GetUpdateRegion().GetBox()
+			dc.SetClippingRect(rect)
+		dc.Clear()
+		image_file = "background.jpg"
+		bmp = wx.Bitmap(image_file)
+		dc.DrawBitmap(bmp, 0, 0)
+		
 	def OnStopRollNumber(self, e):
+		self.StopRoll()
+		
+	def StopRoll(self):
+		global bRolling
+		if not bRolling:
+			# print(u"Not Rolling")
+			return
+
+		self.timer.Stop()
+		self.showNumber.SetLabel(u"恭喜中奖")
+		bRolling = False
+		
 		global currentLevel
 		global currentMaxCount
-		allNumberDisplay = self.getThisDegreeResult(currentLevel, currentMaxCount)
+		allNumberDisplay = getThisDegreeResult(currentLevel, currentMaxCount)
 		self.showResult(currentLevel, allNumberDisplay)
 		currentLevel = 0
 		currentMaxCount = 0
+		self.GetForthButton.Enable(True)
 		self.GetThirdButton.Enable(True)
 		self.GetSecondButton.Enable(True)
 		self.GetFirstButton.Enable(True)
 		self.GetSpecialButton.Enable(True)
 		self.stopRollNumber.Enable(False)
-
-	def getThisDegreeResult(self, degree, limit):
-		global candidateList
-		global preList
-		global resultList
-		self.timer.Stop()
-
-		allNumberDisplay = ""
-		trueDegree = degree - 1
-
-		for i in (range(0, limit)):
-			if (len(preList[trueDegree]) > 0):
-				theNumberDisplay = preList[trueDegree][0]
-				del preList[trueDegree][0]
-			else:
-				theNumber = self.getRandom(len(candidateList))
-				theNumberDisplay = candidateList[theNumber - 1]
-				del candidateList[theNumber - 1]
-			allNumberDisplay = allNumberDisplay + "\n\n" + theNumberDisplay
-			SaveResult(degree, theNumberDisplay)
-			self.showNumber.SetLabel(theNumberDisplay)
-		return allNumberDisplay
-
+		
 	def startRoll(self, degree, limit):
 		global currentLevel
 		global currentMaxCount
+		global candidateList
+		
 		currentLevel = degree
 		currentMaxCount = limit
+		
+		self.rollCount = len(candidateList)
+		
 		self.timer.Start(100)
 		self.stopRollNumber.Enable(True)
+		self.GetForthButton.Enable(False)
 		self.GetThirdButton.Enable(False)
 		self.GetSecondButton.Enable(False)
 		self.GetFirstButton.Enable(False)
 		self.GetSpecialButton.Enable(False)
 
+		global bRolling
+		bRolling = True
+
 	def getInputCount(self):
 		return int(self.inputForCount.GetValue())
+
+	def OnGetForthButton(self, e):
+		self.startRoll(4, self.getInputCount())
 
 	def OnGetThirdButton(self, e):
 		self.startRoll(3, self.getInputCount())
@@ -153,18 +164,46 @@ class MainPanel(wx.Panel):
 		dlg.ShowModal()
 		dlg.Destroy()
 
-	def getRandom(self, maxNumber):
-		theRandom = random.randint(1, maxNumber)
-		return theRandom
-
 	def showCurrentRollNumber(self):
-		global showList
-		currentNumber = self.getRandom(len(candidateList))
+		global candidateList
+		currentNumber = getRandom(self.rollCount)
 		willDisplay = candidateList[currentNumber - 1]
 		self.showNumber.SetLabel(willDisplay)
 
 	def OnTimer(self, e):
 		self.showCurrentRollNumber()
+
+	def OnAbout(self, event):
+		dlg = wx.MessageDialog(self, "A small text editor", "About Sample Editor", wx.OK)
+		dlg.ShowModal()
+		dlg.Destroy()
+
+	def OnExit(self, event):
+		self.Close(True)
+		
+def getRandom(maxNumber):
+	theRandom = random.randint(1, maxNumber)
+	return theRandom
+
+def getThisDegreeResult(degree, limit):
+	global candidateList
+	global preList
+	global resultList
+	
+	allNumberDisplay = ""
+	trueDegree = degree - 1
+
+	for i in (range(0, limit)):
+		if (len(preList[trueDegree]) > 0):
+			theNumberDisplay = preList[trueDegree][0]
+			del preList[trueDegree][0]
+		else:
+			theNumber = getRandom(len(candidateList))
+			theNumberDisplay = candidateList[theNumber - 1]
+			del candidateList[theNumber - 1]
+		allNumberDisplay = allNumberDisplay + "\n\n" + theNumberDisplay
+		SaveResult(degree, theNumberDisplay)
+	return allNumberDisplay
 
 def OpenList():
 	global candidateList
@@ -227,6 +266,7 @@ arrLevel = [[0, u"特等奖"], [1, u"一等奖"], [2, u"二等奖"], [3, u"三�
 
 currentMaxCount = 0
 currentLevel = 0
+bRolling = False
 
 app = wx.App(False)
 frame = MainFrame(None)
