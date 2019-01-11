@@ -5,10 +5,11 @@ import threading
 import time
 import os
 import codecs
+import TransparentText
 
 class MainFrame(wx.Frame):
 	def __init__(self, parent):
-		wx.Frame.__init__(self, parent, title=u"抽奖", size=(800, 600))
+		wx.Frame.__init__(self, parent, title=u"抽奖", size=(1024, 768))
 		self.CreateStatusBar()
 
 		filemenu = wx.Menu()
@@ -27,36 +28,37 @@ class MainFrame(wx.Frame):
 		self.panel.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBack)
 
 		awardMemoStr = u"幸运大抽奖"
-		self.awardMemo = wx.StaticText(self.panel, label=awardMemoStr, pos=(20, 30))
+		self.awardMemo = TransparentText.TransparentText(self.panel, label=awardMemoStr, pos=(20, 30))
 		self.awardMemo.SetForegroundColour("Red")
-		awardMemoFont = wx.Font(60, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD)
+		awardMemoFont = wx.Font(60, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="黑体")
 		self.awardMemo.SetFont(awardMemoFont)
 
 		countForThisTimeStr = u"本次抽出"
-		self.countForThisTime = wx.StaticText(self.panel, label=countForThisTimeStr, pos=(80, 400))
+		self.countForThisTime = TransparentText.TransparentText(self.panel, label=countForThisTimeStr, pos=(80, 400))
 		self.inputForCount = wx.TextCtrl(self.panel, -1, u"50", size=(40, -1), style=wx.TE_CENTRE, pos=(150, 400))
 		self.inputForCount.SetInsertionPoint(0)
 
 		self.stopRollNumber = wx.Button(self.panel, label=u"停", pos=(200, 400))
 		self.Bind(wx.EVT_BUTTON, self.OnStopRollNumber, self.stopRollNumber)
 
-		self.GetForthButton = wx.Button(self.panel, label=u"抽取四等奖", pos=(120, 450), size=(100, 20))
+		btnSize = (100, 30)
+		self.GetForthButton = wx.Button(self.panel, label=u"抽取四等奖", pos=(100, 450), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetForthButton, self.GetForthButton)
 
-		self.GetThirdButton = wx.Button(self.panel, label=u"抽取三等奖", pos=(120, 450))
+		self.GetThirdButton = wx.Button(self.panel, label=u"抽取三等奖", pos=(220, 450), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetThirdButton, self.GetThirdButton)
 
-		self.GetSecondButton = wx.Button(self.panel, label=u"抽取二等奖", pos=(240, 450))
+		self.GetSecondButton = wx.Button(self.panel, label=u"抽取二等奖", pos=(340, 450), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetSecondButton, self.GetSecondButton)
 
-		self.GetFirstButton = wx.Button(self.panel, label=u"抽取一等奖", pos=(360, 450))
+		self.GetFirstButton = wx.Button(self.panel, label=u"抽取一等奖", pos=(460, 450), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetFirstButton, self.GetFirstButton)
 
-		self.GetSpecialButton = wx.Button(self.panel, label=u"抽取特等奖", pos=(480, 450))
+		self.GetSpecialButton = wx.Button(self.panel, label=u"抽取特等奖", pos=(580, 450), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetSpecialButton, self.GetSpecialButton)
 
 		self.showNumber = wx.StaticText(self.panel, label="0000", pos=(80, 220))
-		showNumberFont = wx.Font(98, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD)
+		showNumberFont = wx.Font(98, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="楷体")
 		self.showNumber.SetForegroundColour("Red")
 		self.showNumber.SetFont(showNumberFont)
 
@@ -80,6 +82,8 @@ class MainFrame(wx.Frame):
 		print(code)
 		if (code == 366) or (code == 367) or (code == 66):
 			self.StopRoll()
+		else:
+			event.Skip()
 		
 	def OnEraseBack(self, event):
 		dc = event.GetDC()
