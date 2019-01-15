@@ -9,58 +9,66 @@ import TransparentText
 
 class MainFrame(wx.Frame):
 	def __init__(self, parent):
-		wx.Frame.__init__(self, parent, title=u"抽奖", size=(1024, 768))
-		self.CreateStatusBar()
+		wx.Frame.__init__(self, parent, title=u"抽奖", style=wx.MAXIMIZE | wx.DEFAULT_FRAME_STYLE)
+		#self.CreateStatusBar()
 
-		filemenu = wx.Menu()
+		#filemenu = wx.Menu()
 
-		menuAbout = filemenu.Append(wx.ID_ABOUT, "&About", "Information about this")
-		self.Bind(wx.EVT_MENU, self.OnAbout, menuAbout)
-		filemenu.AppendSeparator()
-		menuExit = filemenu.Append(wx.ID_EXIT, "E&xit", "Terminate the program")
-		self.Bind(wx.EVT_MENU, self.OnExit, menuExit)
+		#menuAbout = filemenu.Append(wx.ID_ABOUT, "&About", "Information about this")
+		#self.Bind(wx.EVT_MENU, self.OnAbout, menuAbout)
+		#filemenu.AppendSeparator()
+		#menuExit = filemenu.Append(wx.ID_EXIT, "E&xit", "Terminate the program")
+		#self.Bind(wx.EVT_MENU, self.OnExit, menuExit)
 
-		menuBar = wx.MenuBar()
-		menuBar.Append(filemenu, "&File")
-		self.SetMenuBar(menuBar)
+		#menuBar = wx.MenuBar()
+		#menuBar.Append(filemenu, "&File")
+		#self.SetMenuBar(menuBar)
 
 		self.panel = wx.Panel(self, -1)
 		self.panel.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBack)
 
+		box = wx.BoxSizer(wx.VERTICAL)
+
 		awardMemoStr = u"幸运大抽奖"
-		self.awardMemo = TransparentText.TransparentText(self.panel, label=awardMemoStr, pos=(20, 30))
-		self.awardMemo.SetForegroundColour("Red")
+		awardMemo = TransparentText.TransparentText(self.panel, label=awardMemoStr, style=wx.ALIGN_CENTRE_HORIZONTAL)
+		awardMemo.SetForegroundColour(wx.Colour(255, 255, 0, 255))
 		awardMemoFont = wx.Font(60, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="黑体")
-		self.awardMemo.SetFont(awardMemoFont)
+		awardMemo.SetFont(awardMemoFont)
+
+		box.Add((-1, 300))
+		box.Add(awardMemo,0,wx.ALIGN_CENTER)
+
+		self.showNumber = wx.StaticText(self.panel, label="0000")
+		showNumberFont = wx.Font(98, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="楷体")
+		self.showNumber.SetForegroundColour(wx.Colour(255, 255, 0, 255))
+		self.showNumber.SetFont(showNumberFont)
+		box.Add((-1, 50))
+		box.Add(self.showNumber, 0, wx.ALIGN_CENTER)
 
 		countForThisTimeStr = u"本次抽出"
-		self.countForThisTime = TransparentText.TransparentText(self.panel, label=countForThisTimeStr, pos=(80, 400))
-		self.inputForCount = wx.TextCtrl(self.panel, -1, u"50", size=(40, -1), style=wx.TE_CENTRE, pos=(150, 400))
+		self.countForThisTime = TransparentText.TransparentText(self.panel, label=countForThisTimeStr, pos=(80, 900))
+		self.countForThisTime.SetForegroundColour(wx.Colour(255, 255, 255, 255))
+		self.inputForCount = wx.TextCtrl(self.panel, -1, u"50", size=(40, -1), style=wx.TE_CENTRE, pos=(150, 900))
 		self.inputForCount.SetInsertionPoint(0)
 
-		self.stopRollNumber = wx.Button(self.panel, label=u"停", pos=(200, 400))
+		self.stopRollNumber = wx.Button(self.panel, label=u"停", pos=(200, 900))
 		self.Bind(wx.EVT_BUTTON, self.OnStopRollNumber, self.stopRollNumber)
 
 		btnSize = (100, 30)
-		self.GetForthButton = wx.Button(self.panel, label=u"抽取四等奖", pos=(100, 450), size=btnSize)
+		self.GetForthButton = wx.Button(self.panel, label=u"抽取四等奖", pos=(100, 810), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetForthButton, self.GetForthButton)
 
-		self.GetThirdButton = wx.Button(self.panel, label=u"抽取三等奖", pos=(220, 450), size=btnSize)
+		self.GetThirdButton = wx.Button(self.panel, label=u"抽取三等奖", pos=(220, 810), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetThirdButton, self.GetThirdButton)
 
-		self.GetSecondButton = wx.Button(self.panel, label=u"抽取二等奖", pos=(340, 450), size=btnSize)
+		self.GetSecondButton = wx.Button(self.panel, label=u"抽取二等奖", pos=(340, 810), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetSecondButton, self.GetSecondButton)
 
-		self.GetFirstButton = wx.Button(self.panel, label=u"抽取一等奖", pos=(460, 450), size=btnSize)
+		self.GetFirstButton = wx.Button(self.panel, label=u"抽取一等奖", pos=(460, 810), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetFirstButton, self.GetFirstButton)
 
-		self.GetSpecialButton = wx.Button(self.panel, label=u"抽取特等奖", pos=(580, 450), size=btnSize)
+		self.GetSpecialButton = wx.Button(self.panel, label=u"抽取特等奖", pos=(580, 810), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetSpecialButton, self.GetSpecialButton)
-
-		self.showNumber = wx.StaticText(self.panel, label="0000", pos=(80, 220))
-		showNumberFont = wx.Font(98, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="楷体")
-		self.showNumber.SetForegroundColour("Red")
-		self.showNumber.SetFont(showNumberFont)
 
 		self.GetForthButton.Enable(True)
 		self.GetThirdButton.Enable(True)
@@ -75,7 +83,10 @@ class MainFrame(wx.Frame):
 		self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
 		self.rollCount = 0
 
+		self.panel.SetSizer(box)
+
 		self.Show(True)
+		self.ShowFullScreen(True, wx.FULLSCREEN_ALL)
 		
 	def OnKey(self, event):
 		code = event.GetKeyCode()
@@ -92,9 +103,18 @@ class MainFrame(wx.Frame):
 			rect = self.GetUpdateRegion().GetBox()
 			dc.SetClippingRect(rect)
 		dc.Clear()
-		image_file = "background.jpg"
+
+		bbr = wx.Brush(wx.Colour(0, 0, 0, 255), wx.BRUSHSTYLE_SOLID)
+		dc.SetBackground(bbr)
+		dc.SetBackgroundMode(wx.SOLID)
+		dc.Clear()
+		frame_width, frame_height = self.GetSize()
+		image_file = "1920x540.jpg"
 		bmp = wx.Bitmap(image_file)
-		dc.DrawBitmap(bmp, 0, 0)
+		x, y = bmp.Size
+		x = frame_width / 2 - x / 2
+		y = frame_height / 2 - y / 2
+		dc.DrawBitmap(bmp, x, y)
 		
 	def OnStopRollNumber(self, e):
 		self.StopRoll()
