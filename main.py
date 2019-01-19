@@ -6,44 +6,20 @@ import time
 import os
 import codecs
 import TransparentText
+import PanelMain
 
 class MainFrame(wx.Frame):
 	def __init__(self, parent):
 		wx.Frame.__init__(self, parent, title=u"抽奖", style=wx.MAXIMIZE | wx.DEFAULT_FRAME_STYLE)
-		#self.CreateStatusBar()
 
-		#filemenu = wx.Menu()
-
-		#menuAbout = filemenu.Append(wx.ID_ABOUT, "&About", "Information about this")
-		#self.Bind(wx.EVT_MENU, self.OnAbout, menuAbout)
-		#filemenu.AppendSeparator()
-		#menuExit = filemenu.Append(wx.ID_EXIT, "E&xit", "Terminate the program")
-		#self.Bind(wx.EVT_MENU, self.OnExit, menuExit)
-
-		#menuBar = wx.MenuBar()
-		#menuBar.Append(filemenu, "&File")
-		#self.SetMenuBar(menuBar)
-
-		self.panel = wx.Panel(self, -1)
+		self.panel = PanelMain.PanelMain(self)
 		self.panel.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBack)
 
-		box = wx.BoxSizer(wx.VERTICAL)
-
-		awardMemoStr = u"幸运大抽奖"
-		awardMemo = TransparentText.TransparentText(self.panel, label=awardMemoStr, style=wx.ALIGN_CENTRE_HORIZONTAL)
-		awardMemo.SetForegroundColour(wx.Colour(255, 255, 0, 255))
-		awardMemoFont = wx.Font(60, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="黑体")
-		awardMemo.SetFont(awardMemoFont)
-
-		box.Add((-1, 300))
-		box.Add(awardMemo,0,wx.ALIGN_CENTER)
-
-		self.showNumber = wx.StaticText(self.panel, label="0000")
-		showNumberFont = wx.Font(98, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="楷体")
-		self.showNumber.SetForegroundColour(wx.Colour(255, 255, 0, 255))
-		self.showNumber.SetFont(showNumberFont)
-		box.Add((-1, 50))
-		box.Add(self.showNumber, 0, wx.ALIGN_CENTER)
+		#awardMemoStr = u"幸运大抽奖"
+		#awardMemo = TransparentText.TransparentText(self.panel, label=awardMemoStr, style=wx.ALIGN_CENTRE_HORIZONTAL)
+		#awardMemo.SetForegroundColour(wx.Colour(255, 255, 0, 255))
+		#awardMemoFont = wx.Font(60, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="黑体")
+		#awardMemo.SetFont(awardMemoFont)
 
 		countForThisTimeStr = u"本次抽出"
 		self.countForThisTime = TransparentText.TransparentText(self.panel, label=countForThisTimeStr, pos=(80, 900))
@@ -51,24 +27,30 @@ class MainFrame(wx.Frame):
 		self.inputForCount = wx.TextCtrl(self.panel, -1, u"50", size=(40, -1), style=wx.TE_CENTRE, pos=(150, 900))
 		self.inputForCount.SetInsertionPoint(0)
 
-		self.stopRollNumber = wx.Button(self.panel, label=u"停", pos=(200, 900))
+		self.stopRollNumber = wx.Button(self.panel, label=u"停", pos=(1200, 900))
 		self.Bind(wx.EVT_BUTTON, self.OnStopRollNumber, self.stopRollNumber)
 
 		btnSize = (100, 30)
-		self.GetForthButton = wx.Button(self.panel, label=u"抽取四等奖", pos=(100, 810), size=btnSize)
+		self.GetForthButton = wx.Button(self.panel, label=u"抽取四等奖", pos=(300, 910), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetForthButton, self.GetForthButton)
 
-		self.GetThirdButton = wx.Button(self.panel, label=u"抽取三等奖", pos=(220, 810), size=btnSize)
+		self.GetThirdButton = wx.Button(self.panel, label=u"抽取三等奖", pos=(420, 910), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetThirdButton, self.GetThirdButton)
 
-		self.GetSecondButton = wx.Button(self.panel, label=u"抽取二等奖", pos=(340, 810), size=btnSize)
+		self.GetSecondButton = wx.Button(self.panel, label=u"抽取二等奖", pos=(540, 910), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetSecondButton, self.GetSecondButton)
 
-		self.GetFirstButton = wx.Button(self.panel, label=u"抽取一等奖", pos=(460, 810), size=btnSize)
+		self.GetFirstButton = wx.Button(self.panel, label=u"抽取一等奖", pos=(660, 910), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetFirstButton, self.GetFirstButton)
 
-		self.GetSpecialButton = wx.Button(self.panel, label=u"抽取特等奖", pos=(580, 810), size=btnSize)
+		self.GetSpecialButton = wx.Button(self.panel, label=u"抽取特等奖", pos=(780, 910), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetSpecialButton, self.GetSpecialButton)
+
+		self.btnShowResultPanel = wx.Button(self.panel, label=u"显示上次结果", pos=(900, 910), size=btnSize)
+		self.Bind(wx.EVT_BUTTON, self.OnBtnShowResultPanel, self.btnShowResultPanel)
+
+		self.btnHideResultPanel = wx.Button(self.panel, label=u"关闭结果显示", pos=(1020, 910), size=btnSize)
+		self.Bind(wx.EVT_BUTTON, self.OnBtnHideResultPanel, self.btnHideResultPanel)
 
 		self.GetForthButton.Enable(True)
 		self.GetThirdButton.Enable(True)
@@ -83,11 +65,15 @@ class MainFrame(wx.Frame):
 		self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
 		self.rollCount = 0
 
-		self.panel.SetSizer(box)
+		self.LoadBGMain()
+		self.LoadBGResult()
+		self.bmp = self.bmpMain
 
 		self.Show(True)
 		self.ShowFullScreen(True, wx.FULLSCREEN_ALL)
-		
+
+		self.HCenter(self.panel.showNumber)
+
 	def OnKey(self, event):
 		code = event.GetKeyCode()
 		print(code)
@@ -96,25 +82,38 @@ class MainFrame(wx.Frame):
 		else:
 			event.Skip()
 		
+	def ChangeBGToMain(self):
+		self.bmp = self.bmpMain
+		self.Refresh()
+
+	def ChangeBGToResult(self):
+		self.bmp = self.bmpResult
+		self.Refresh()
+
+	def LoadBGMain(self):
+		image_file = "background.jpg"
+		self.bmpMain = wx.Bitmap(image_file)
+
+	def LoadBGResult(self):
+		image_file = "bg_result.jpg"
+		self.bmpResult = wx.Bitmap(image_file)
+
 	def OnEraseBack(self, event):
 		dc = event.GetDC()
 		if not dc:
 			dc = wx.ClientDC(self)
 			rect = self.GetUpdateRegion().GetBox()
 			dc.SetClippingRect(rect)
-		dc.Clear()
-
+			dc.Clear()
 		bbr = wx.Brush(wx.Colour(0, 0, 0, 255), wx.BRUSHSTYLE_SOLID)
 		dc.SetBackground(bbr)
 		dc.SetBackgroundMode(wx.SOLID)
 		dc.Clear()
+		x, y = self.bmp.Size
 		frame_width, frame_height = self.GetSize()
-		image_file = "1920x540.jpg"
-		bmp = wx.Bitmap(image_file)
-		x, y = bmp.Size
 		x = frame_width / 2 - x / 2
 		y = frame_height / 2 - y / 2
-		dc.DrawBitmap(bmp, x, y)
+		dc.DrawBitmap(self.bmp, x, y)
 		
 	def OnStopRollNumber(self, e):
 		self.StopRoll()
@@ -126,7 +125,7 @@ class MainFrame(wx.Frame):
 			return
 
 		self.timer.Stop()
-		self.showNumber.SetLabel(u"恭喜中奖")
+		self.panel.showNumber.SetLabel(u"恭喜中奖")
 		bRolling = False
 		
 		global currentLevel
@@ -163,6 +162,34 @@ class MainFrame(wx.Frame):
 		global bRolling
 		bRolling = True
 
+	def HCenter(self, obj):
+		frame_width, frame_height = self.GetSize()
+		obj_width, obj_height = obj.GetSize()
+		obj_pos = obj.GetPosition()
+		x = frame_width / 2 - obj_width / 2
+		obj_pos.x = x
+		obj.SetPosition(obj_pos)
+		
+	def OnBtnShowResultPanel(self, event):
+		self.panel.showNumber.SetLabel("")
+		showNumberFont = wx.Font(24, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="楷体")
+		self.panel.showNumber.SetFont(showNumberFont)
+		self.panel.showNumber.Size = (920, 338)
+		self.panel.showNumber.SetPosition(wx.Point(0, 415))
+		self.HCenter(self.panel.showNumber)
+		self.panel.showNumber.SetLabel(u"我我我1234\t你你你\t他他他\t22222\t33333\n我我我\t你你你\t他34f他他\t22222\t33333\n我我我\t你你你\t他他他\t22222\t33333\n谁我我我\t你你你\t他他他\t22222\t33333\n谁我我我\t你你你-34131\t他他他\t22222\t33333\n谁我我我\t你你你\t他他他\t22222\t33333\n谁我我我\t你你你\t他他他\t22222\t33333\n谁我我我\t你你你\t他他他\t22222\t33333\n谁我我我\t你你你\t他他他\t22222\t33333\n谁我我我\t你你你\t他他他\t22222\t33333")
+		self.ChangeBGToResult()
+
+	def OnBtnHideResultPanel(self, event):
+		self.panel.showNumber.SetLabel("")
+		showNumberFont = wx.Font(80, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="楷体")
+		self.panel.showNumber.SetFont(showNumberFont)
+		self.panel.showNumber.Size = (610, 118)
+		self.panel.showNumber.SetPosition(wx.Point(0, 484))
+		self.HCenter(self.panel.showNumber)
+		self.panel.showNumber.SetLabel(u"- - - -")
+		self.ChangeBGToMain()
+
 	def getInputCount(self):
 		return int(self.inputForCount.GetValue())
 
@@ -188,14 +215,14 @@ class MainFrame(wx.Frame):
 		dlg.ShowModal()
 		dlg.Destroy()
 
-	def showCurrentRollNumber(self):
+	def showRandomNumber(self):
 		global candidateList
 		currentNumber = getRandom(self.rollCount)
 		willDisplay = candidateList[currentNumber - 1]
-		self.showNumber.SetLabel(willDisplay)
+		self.panel.showNumber.SetLabel(willDisplay)
 
 	def OnTimer(self, e):
-		self.showCurrentRollNumber()
+		self.showRandomNumber()
 
 	def OnAbout(self, event):
 		dlg = wx.MessageDialog(self, "A small text editor", "About Sample Editor", wx.OK)
