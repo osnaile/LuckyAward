@@ -139,7 +139,15 @@ class MainFrame(wx.Frame):
 		global currentLevel
 		global currentMaxCount
 		global candidateList
-		
+
+		self.rollCount = len(candidateList)
+		if self.rollCount == 0:
+			dlg = wx.MessageDialog(self, u"所有人都已抽中", u"提示", wx.OK)
+			dlg.ShowModal()
+			dlg.Destroy()
+			return
+			
+
 		currentLevel = degree
 		currentMaxCount = limit
 		
@@ -278,6 +286,8 @@ def getThisDegreeResult(degree, limit):
 			theNumberDisplay = preList[trueDegree][0]
 			del preList[trueDegree][0]
 		else:
+			if len(candidateList) == 0:
+				break
 			theNumber = getRandom(len(candidateList))
 			theNumberDisplay = candidateList[theNumber - 1]
 			del candidateList[theNumber - 1]
