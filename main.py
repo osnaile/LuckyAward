@@ -5,7 +5,6 @@ import threading
 import time
 import os
 import codecs
-import TransparentText
 import PanelMain
 
 class MainFrame(wx.Frame):
@@ -15,19 +14,14 @@ class MainFrame(wx.Frame):
 		self.panel = PanelMain.PanelMain(self)
 		self.panel.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBack)
 
-		#awardMemoStr = u"幸运大抽奖"
-		#awardMemo = TransparentText.TransparentText(self.panel, label=awardMemoStr, style=wx.ALIGN_CENTRE_HORIZONTAL)
-		#awardMemo.SetForegroundColour(wx.Colour(255, 255, 0, 255))
-		#awardMemoFont = wx.Font(60, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="黑体")
-		#awardMemo.SetFont(awardMemoFont)
-
 		countForThisTimeStr = u"本次抽出"
-		self.countForThisTime = TransparentText.TransparentText(self.panel, label=countForThisTimeStr, pos=(80, 900))
+		self.countForThisTime = wx.StaticText(self.panel, label=countForThisTimeStr, pos=(80, 900))
+		self.countForThisTime.SetBackgroundColour(wx.Colour(0, 0, 0, 255))
 		self.countForThisTime.SetForegroundColour(wx.Colour(255, 255, 255, 255))
 		self.inputForCount = wx.TextCtrl(self.panel, -1, u"50", size=(40, -1), style=wx.TE_CENTRE, pos=(150, 900))
 		self.inputForCount.SetInsertionPoint(0)
 
-		self.stopRollNumber = wx.Button(self.panel, label=u"停", pos=(1200, 900))
+		self.stopRollNumber = wx.Button(self.panel, label=u"停", pos=(1200, 900), size=(150, 50))
 		self.Bind(wx.EVT_BUTTON, self.OnStopRollNumber, self.stopRollNumber)
 
 		btnSize = (100, 30)
@@ -46,10 +40,10 @@ class MainFrame(wx.Frame):
 		self.GetSpecialButton = wx.Button(self.panel, label=u"抽取特等奖", pos=(780, 910), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnGetSpecialButton, self.GetSpecialButton)
 
-		self.btnShowResultPanel = wx.Button(self.panel, label=u"显示上次结果", pos=(900, 910), size=btnSize)
+		self.btnShowResultPanel = wx.Button(self.panel, label=u"显示上次结果", pos=(900, 950), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnBtnShowResultPanel, self.btnShowResultPanel)
 
-		self.btnHideResultPanel = wx.Button(self.panel, label=u"关闭结果显示", pos=(1020, 910), size=btnSize)
+		self.btnHideResultPanel = wx.Button(self.panel, label=u"关闭结果显示", pos=(1020, 950), size=btnSize)
 		self.Bind(wx.EVT_BUTTON, self.OnBtnHideResultPanel, self.btnHideResultPanel)
 
 		self.GetForthButton.Enable(True)
@@ -73,6 +67,7 @@ class MainFrame(wx.Frame):
 		self.ShowFullScreen(True, wx.FULLSCREEN_ALL)
 
 		self.HCenter(self.panel.showNumber)
+		self.HCenter(self.panel.txtTitle)
 
 	def OnKey(self, event):
 		code = event.GetKeyCode()
@@ -131,8 +126,7 @@ class MainFrame(wx.Frame):
 		global currentLevel
 		global currentMaxCount
 		allNumberDisplay = getThisDegreeResult(currentLevel, currentMaxCount)
-		self.showResult(currentLevel, allNumberDisplay)
-		currentLevel = 0
+		self.showResult(currentLevel)
 		currentMaxCount = 0
 		self.GetForthButton.Enable(True)
 		self.GetThirdButton.Enable(True)
@@ -150,6 +144,8 @@ class MainFrame(wx.Frame):
 		currentMaxCount = limit
 		
 		self.rollCount = len(candidateList)
+
+		self.hideResult()
 		
 		self.timer.Start(100)
 		self.stopRollNumber.Enable(True)
@@ -171,24 +167,11 @@ class MainFrame(wx.Frame):
 		obj.SetPosition(obj_pos)
 		
 	def OnBtnShowResultPanel(self, event):
-		self.panel.showNumber.SetLabel("")
-		showNumberFont = wx.Font(24, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="楷体")
-		self.panel.showNumber.SetFont(showNumberFont)
-		self.panel.showNumber.Size = (920, 338)
-		self.panel.showNumber.SetPosition(wx.Point(0, 415))
-		self.HCenter(self.panel.showNumber)
-		self.panel.showNumber.SetLabel(u"我我我1234\t你你你\t他他他\t22222\t33333\n我我我\t你你你\t他34f他他\t22222\t33333\n我我我\t你你你\t他他他\t22222\t33333\n谁我我我\t你你你\t他他他\t22222\t33333\n谁我我我\t你你你-34131\t他他他\t22222\t33333\n谁我我我\t你你你\t他他他\t22222\t33333\n谁我我我\t你你你\t他他他\t22222\t33333\n谁我我我\t你你你\t他他他\t22222\t33333\n谁我我我\t你你你\t他他他\t22222\t33333\n谁我我我\t你你你\t他他他\t22222\t33333")
-		self.ChangeBGToResult()
+		global currentLevel
+		self.showResult(currentLevel)
 
 	def OnBtnHideResultPanel(self, event):
-		self.panel.showNumber.SetLabel("")
-		showNumberFont = wx.Font(80, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="楷体")
-		self.panel.showNumber.SetFont(showNumberFont)
-		self.panel.showNumber.Size = (610, 118)
-		self.panel.showNumber.SetPosition(wx.Point(0, 484))
-		self.HCenter(self.panel.showNumber)
-		self.panel.showNumber.SetLabel(u"- - - -")
-		self.ChangeBGToMain()
+		self.hideResult()
 
 	def getInputCount(self):
 		return int(self.inputForCount.GetValue())
@@ -208,12 +191,64 @@ class MainFrame(wx.Frame):
 	def OnGetSpecialButton(self, e):
 		self.startRoll(0, self.getInputCount())
 
-	def showResult(self, level, msg):
-		global arrLevel;
+	def showResult(self, level):
+		global arrLevel
+		global showList
+		lenShowList = len(showList)
 		title = arrLevel[level][1]
-		dlg = wx.MessageDialog(self, msg, title, wx.OK)
-		dlg.ShowModal()
-		dlg.Destroy()
+		self.panel.showNumber.Hide()
+		self.panel.txtTitle.SetLabel(u"获得" + title + u"的是")
+		self.panel.txtTitle.Show()
+		if lenShowList > 10:
+			self.HCenter(self.panel.gridResult)
+			self.panel.gridResult.Show()
+			row = 0
+			col = 0
+			for item in showList:
+				self.panel.gridResult.SetCellValue(row, col, item)
+				col = col + 1
+				if col == 5:
+					col = 0
+					row = row + 1
+		else:
+			txtToShow = u""
+			for item in showList:
+				txtToShow = txtToShow + item + "\n"
+			self.panel.txtResult.SetLabel(txtToShow)
+			willFontSize = 20
+			if lenShowList < 4:
+				willFontSize = 60
+			elif lenShowList < 6:
+				willFontSize = 40
+			elif lenShowList < 7:
+				willFontSize = 32 
+			elif lenShowList < 9:
+				willFontSize = 28
+			else:
+				willFontSize = 20
+			print (lenShowList, willFontSize)
+			txtResultFont = wx.Font(willFontSize, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="楷体")
+			self.panel.txtResult.SetFont(txtResultFont)
+			willHeight = txtResultFont.GetPixelSize().Height * len(showList)
+			print ("willHeight = " + str(willHeight))
+			self.panel.txtResult.SetSize(920, willHeight)
+			self.panel.txtResult.SetPosition(wx.Point(120, 455 + (135 - willHeight / 2)))
+			self.HCenter(self.panel.txtResult)
+			self.panel.txtResult.Show()
+		self.ChangeBGToResult()
+
+	def hideResult(self):
+		self.panel.gridResult.Hide()
+		self.panel.txtTitle.Hide()
+		self.panel.txtResult.Hide()
+		showNumberFont = wx.Font(80, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="楷体")
+		self.panel.showNumber.SetFont(showNumberFont)
+		self.panel.showNumber.Size = (610, 118)
+		self.panel.showNumber.SetPosition(wx.Point(0, 484))
+		self.HCenter(self.panel.showNumber)
+		self.panel.showNumber.SetLabel(u"- - - -")
+		self.panel.showNumber.Show()
+		self.ChangeBGToMain()
 
 	def showRandomNumber(self):
 		global candidateList
@@ -224,14 +259,6 @@ class MainFrame(wx.Frame):
 	def OnTimer(self, e):
 		self.showRandomNumber()
 
-	def OnAbout(self, event):
-		dlg = wx.MessageDialog(self, "A small text editor", "About Sample Editor", wx.OK)
-		dlg.ShowModal()
-		dlg.Destroy()
-
-	def OnExit(self, event):
-		self.Close(True)
-		
 def getRandom(maxNumber):
 	theRandom = random.randint(1, maxNumber)
 	return theRandom
@@ -240,9 +267,11 @@ def getThisDegreeResult(degree, limit):
 	global candidateList
 	global preList
 	global resultList
+	global showList
 	
 	allNumberDisplay = ""
 	trueDegree = degree - 1
+	showList = []
 
 	for i in (range(0, limit)):
 		if (len(preList[trueDegree]) > 0):
@@ -252,8 +281,9 @@ def getThisDegreeResult(degree, limit):
 			theNumber = getRandom(len(candidateList))
 			theNumberDisplay = candidateList[theNumber - 1]
 			del candidateList[theNumber - 1]
+		showList.append(theNumberDisplay)
 		allNumberDisplay = allNumberDisplay + "\n\n" + theNumberDisplay
-		SaveResult(degree, theNumberDisplay)
+	SaveResult(degree)
 	return allNumberDisplay
 
 def OpenList():
@@ -267,10 +297,8 @@ def OpenList():
 			degree = int(txt[-1]) - 1
 			preNumber = txt[:-2]
 			preList[degree].append(preNumber)
-			showList.append(preNumber)
 		else:
 			candidateList.append(txt)
-			showList.append(txt)
 	fp.close()
 
 def ReadResultList():
@@ -293,13 +321,14 @@ def ReadResultList():
 			candidateList.remove(resultNumber)
 	fp.close()
 
-def SaveResult(degree, theNumberDisplay):
+def SaveResult(degree):
+	global showList
 	global resultList
-	resultList[degree - 1].append(theNumberDisplay)
 	fp = codecs.open("data/result.txt", "a", "utf-8")
-	#print str(degree) + "," + theNumberDisplay
-	fp.write(str(degree) + "," + theNumberDisplay)
-	fp.write("\n")
+	for item in showList:
+		resultList[degree-1].append(item)
+		#print str(degree) + "," + theNumberDisplay
+		fp.write(str(degree) + "," + item + "\n")
 	fp.close()
 
 candidateList = []
