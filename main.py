@@ -213,6 +213,8 @@ class MainFrame(wx.Frame):
             self.panel.gridResult.Show()
             row = 0
             col = 0
+            if lenShowList <= 25:
+                row = 2
             for item in showList:
                 self.panel.gridResult.SetCellValue(row, col, item)
                 col = col + 1
@@ -294,8 +296,10 @@ def getThisDegreeResult(degree, limit):
         if (len(preList[trueDegree]) > 0):
             theNumberDisplay = preList[trueDegree][0]
             del preList[trueDegree][0]
-            candidateList.remove(theNumberDisplay)
-            thisLevelList.remove(theNumberDisplay)
+            if theNumberDisplay in candidateList:
+                candidateList.remove(theNumberDisplay)
+            if theNumberDisplay in thisLevelList:
+                thisLevelList.remove(theNumberDisplay)
         else:
             if len(thisLevelList) == 0:
                 break
