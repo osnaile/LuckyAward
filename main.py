@@ -206,6 +206,7 @@ class MainFrame(wx.Frame):
         title = arrLevel[level][1]
         self.panel.showNumber.Hide()
         self.panel.txtTitle.SetLabel(u"获得" + title + u"的是")
+        self.HCenter(self.panel.txtTitle)
         self.panel.txtTitle.Show()
         if lenShowList > 10:
             self.HCenter(self.panel.gridResult)
