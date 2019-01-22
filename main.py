@@ -296,8 +296,6 @@ def getThisDegreeResult(degree, limit):
         if (len(preList[trueDegree]) > 0):
             theNumberDisplay = preList[trueDegree][0]
             del preList[trueDegree][0]
-            if theNumberDisplay in candidateList:
-                candidateList.remove(theNumberDisplay)
             if theNumberDisplay in thisLevelList:
                 thisLevelList.remove(theNumberDisplay)
         else:
@@ -306,7 +304,8 @@ def getThisDegreeResult(degree, limit):
             theNumber = getRandom(len(thisLevelList))
             theNumberDisplay = thisLevelList[theNumber - 1]
             del thisLevelList[theNumber - 1]
-        candidateList.remove(theNumberDisplay)
+        if theNumberDisplay in candidateList:
+            candidateList.remove(theNumberDisplay)
         showList.append(theNumberDisplay)
     SaveResult(degree)
 
