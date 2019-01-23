@@ -25,7 +25,7 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnStopRollNumber, self.stopRollNumber)
 
         btnSize = (100, 30)
-        self.GetForthButton = wx.Button(self.panel, label=u"抽取四等奖", pos=(300, 910), size=btnSize)
+        self.GetForthButton = wx.Button(self.panel, label=u"抽取幸运奖", pos=(300, 910), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnGetForthButton, self.GetForthButton)
 
         self.GetThirdButton = wx.Button(self.panel, label=u"抽取三等奖", pos=(420, 910), size=btnSize)
@@ -384,7 +384,7 @@ ReadExceptList()
 #print preList
 #print resultList
 
-arrLevel = [[0, u"特等奖"], [1, u"一等奖"], [2, u"二等奖"], [3, u"三等奖"], [4, u"四等奖"]]
+arrLevel = [[0, u"特等奖"], [1, u"一等奖"], [2, u"二等奖"], [3, u"三等奖"], [4, u"幸运奖"]]
 
 currentMaxCount = 0
 currentLevel = 0
