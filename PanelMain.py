@@ -31,7 +31,7 @@ class PanelMain (wx.Panel):
         self.gridResult = wx.grid.Grid(self, -1)
         self.gridResult.Hide()
         self.gridResult.CreateGrid(10, 5)
-        self.gridResult.SetCellTextColour(wx.Colour(255, 0, 0, 255))
+        self.gridResult.SetDefaultCellTextColour(wx.Colour(255, 0, 0, 255))
         self.gridResult.Size = (920, 310)
         self.gridResult.SetPosition(wx.Point(0, 445))
         self.gridResult.HideRowLabels()
