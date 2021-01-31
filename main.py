@@ -72,7 +72,10 @@ class MainFrame(wx.Frame):
     def OnKey(self, event):
         code = event.GetKeyCode()
         print(code)
-        if (code == 366) or (code == 367) or (code == 66):
+        # code 66 是字母 "b"，也是罗技翻页器的黑屏按钮
+        # code 366 和 367 分别是罗技翻页器上的左和右
+        # code 306 是罗技翻页器上播放按钮
+        if (code == 366) or (code == 367) or (code == 66) or (code == 306):
             self.StopRoll()
         else:
             event.Skip()
@@ -185,25 +188,29 @@ class MainFrame(wx.Frame):
         return int(self.inputForCount.GetValue())
 
     def OnGetForthButton(self, e):
-        self.startRoll(4, self.getInputCount())
+        self.startRoll(5, self.getInputCount())
 
     def OnGetThirdButton(self, e):
-        self.startRoll(3, self.getInputCount())
+        self.startRoll(4, self.getInputCount())
 
     def OnGetSecondButton(self, e):
-        self.startRoll(2, self.getInputCount())
+        self.startRoll(3, self.getInputCount())
 
     def OnGetFirstButton(self, e):
-        self.startRoll(1, self.getInputCount()) 
+        self.startRoll(2, self.getInputCount()) 
 
     def OnGetSpecialButton(self, e):
-        self.startRoll(0, self.getInputCount())
+        self.startRoll(1, self.getInputCount())
 
     def showResult(self, level):
         global arrLevel
         global showList
+
+        self.panel.txtBG.Show()
+        self.HCenter(self.panel.txtBG)
+
         lenShowList = len(showList)
-        title = arrLevel[level][1]
+        title = arrLevel[level-1][1]
         self.panel.showNumber.Hide()
         self.panel.txtTitle.SetLabel(u"获得" + title + u"的是")
         self.HCenter(self.panel.txtTitle)
@@ -239,7 +246,7 @@ class MainFrame(wx.Frame):
             else:
                 willFontSize = 20
             print (lenShowList, willFontSize)
-            txtResultFont = wx.Font(willFontSize, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="楷体")
+            txtResultFont = wx.Font(willFontSize, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="Kaiti SC")
             self.panel.txtResult.SetFont(txtResultFont)
             willHeight = txtResultFont.GetPixelSize().Height * len(showList)
             print ("willHeight = " + str(willHeight))
@@ -253,7 +260,9 @@ class MainFrame(wx.Frame):
         self.panel.gridResult.Hide()
         self.panel.txtTitle.Hide()
         self.panel.txtResult.Hide()
-        showNumberFont = wx.Font(60, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="楷体")
+        self.panel.txtBG.Hide()
+
+        showNumberFont = wx.Font(60, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="Kaiti SC")
         self.panel.showNumber.SetFont(showNumberFont)
         self.panel.showNumber.Size = (610, 100)
         self.panel.showNumber.SetPosition(wx.Point(0, 500))
@@ -284,6 +293,7 @@ def getThisDegreeResult(degree, limit):
     
     allNumberDisplay = ""
     trueDegree = degree - 1
+    print("trueDegree: ", trueDegree)
     showList = []
 
     thisLevelList = []
@@ -384,7 +394,7 @@ ReadExceptList()
 #print preList
 #print resultList
 
-arrLevel = [[0, u"特等奖"], [1, u"一等奖"], [2, u"二等奖"], [3, u"三等奖"], [4, u"幸运奖"]]
+arrLevel = [[1, u"特等奖"], [2, u"一等奖"], [3, u"二等奖"], [4, u"三等奖"], [5, u"幸运奖"]]
 
 currentMaxCount = 0
 currentLevel = 0
