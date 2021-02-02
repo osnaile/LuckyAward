@@ -9,41 +9,47 @@ import PanelMain
 
 class MainFrame(wx.Frame):
     def __init__(self, parent):
+        global candidateList
+
         wx.Frame.__init__(self, parent, title=u"抽奖", style=wx.MAXIMIZE | wx.DEFAULT_FRAME_STYLE)
 
         self.panel = PanelMain.PanelMain(self)
         self.panel.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBack)
 
         countForThisTimeStr = u"本次抽出"
-        self.countForThisTime = wx.StaticText(self.panel, label=countForThisTimeStr, pos=(80, 900))
+        self.countForThisTime = wx.StaticText(self.panel, label=countForThisTimeStr, pos=(80, 1040))
         self.countForThisTime.SetBackgroundColour(wx.Colour(0, 0, 0, 255))
         self.countForThisTime.SetForegroundColour(wx.Colour(255, 255, 255, 255))
-        self.inputForCount = wx.TextCtrl(self.panel, -1, u"50", size=(40, -1), style=wx.TE_CENTRE, pos=(150, 900))
+        self.inputForCount = wx.TextCtrl(self.panel, -1, u"50", size=(40, -1), style=wx.TE_CENTRE, pos=(150, 1040))
         self.inputForCount.SetInsertionPoint(0)
 
-        self.stopRollNumber = wx.Button(self.panel, label=u"停", pos=(1200, 900), size=(150, 50))
+        self.CandidateCount = wx.StaticText(self.panel, label=u"/", pos=(200, 1040))
+        self.CandidateCount.SetBackgroundColour(wx.Colour(0, 0, 0, 255))
+        self.CandidateCount.SetForegroundColour(wx.Colour(255, 255, 255, 255))
+
+        self.stopRollNumber = wx.Button(self.panel, label=u"停", pos=(1200, 1040), size=(150, 30))
         self.Bind(wx.EVT_BUTTON, self.OnStopRollNumber, self.stopRollNumber)
 
         btnSize = (100, 30)
-        self.GetForthButton = wx.Button(self.panel, label=u"抽取幸运奖", pos=(300, 910), size=btnSize)
+        self.GetForthButton = wx.Button(self.panel, label=u"抽取幸运奖", pos=(300, 1040), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnGetForthButton, self.GetForthButton)
 
-        self.GetThirdButton = wx.Button(self.panel, label=u"抽取三等奖", pos=(420, 910), size=btnSize)
+        self.GetThirdButton = wx.Button(self.panel, label=u"抽取三等奖", pos=(420, 1040), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnGetThirdButton, self.GetThirdButton)
 
-        self.GetSecondButton = wx.Button(self.panel, label=u"抽取二等奖", pos=(540, 910), size=btnSize)
+        self.GetSecondButton = wx.Button(self.panel, label=u"抽取二等奖", pos=(540, 1040), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnGetSecondButton, self.GetSecondButton)
 
-        self.GetFirstButton = wx.Button(self.panel, label=u"抽取一等奖", pos=(660, 910), size=btnSize)
+        self.GetFirstButton = wx.Button(self.panel, label=u"抽取一等奖", pos=(660, 1040), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnGetFirstButton, self.GetFirstButton)
 
-        self.GetSpecialButton = wx.Button(self.panel, label=u"抽取特等奖", pos=(780, 910), size=btnSize)
+        self.GetSpecialButton = wx.Button(self.panel, label=u"抽取特等奖", pos=(780, 1040), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnGetSpecialButton, self.GetSpecialButton)
 
-        self.btnShowResultPanel = wx.Button(self.panel, label=u"显示上次结果", pos=(900, 950), size=btnSize)
+        self.btnShowResultPanel = wx.Button(self.panel, label=u"显示上次结果", pos=(900, 1040), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnBtnShowResultPanel, self.btnShowResultPanel)
 
-        self.btnHideResultPanel = wx.Button(self.panel, label=u"关闭结果显示", pos=(1020, 950), size=btnSize)
+        self.btnHideResultPanel = wx.Button(self.panel, label=u"关闭结果显示", pos=(1020, 1040), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnBtnHideResultPanel, self.btnHideResultPanel)
 
         self.GetForthButton.Enable(True)
@@ -58,6 +64,8 @@ class MainFrame(wx.Frame):
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
         self.rollCount = 0
+
+        self.CandidateCount.SetLabel(u"/" + str(len(candidateList)))
 
         self.LoadBGMain()
         self.LoadBGResult()
@@ -118,6 +126,8 @@ class MainFrame(wx.Frame):
         
     def StopRoll(self):
         global bRolling
+        global candidateList
+
         if not bRolling:
             # print(u"Not Rolling")
             return
@@ -131,6 +141,9 @@ class MainFrame(wx.Frame):
         allNumberDisplay = getThisDegreeResult(currentLevel, currentMaxCount)
         self.showResult(currentLevel)
         currentMaxCount = 0
+
+        self.CandidateCount.SetLabel(u"/" + str(len(candidateList)))
+        
         self.GetForthButton.Enable(True)
         self.GetThirdButton.Enable(True)
         self.GetSecondButton.Enable(True)
@@ -236,19 +249,23 @@ class MainFrame(wx.Frame):
             self.panel.txtResult.SetLabel(txtToShow)
             willFontSize = 20
             if lenShowList < 4:
-                willFontSize = 60
+                willFontSize = 100
             elif lenShowList < 6:
-                willFontSize = 40
+                willFontSize = 68
             elif lenShowList < 7:
-                willFontSize = 32 
+                willFontSize = 58
+            elif lenShowList < 8:
+                willFontSize = 50
             elif lenShowList < 9:
-                willFontSize = 28
+                willFontSize = 40
+            elif lenShowList < 10:
+                willFontSize = 38
             else:
-                willFontSize = 20
+                willFontSize = 34
             print (lenShowList, willFontSize)
             txtResultFont = wx.Font(willFontSize, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="Kaiti SC")
             self.panel.txtResult.SetFont(txtResultFont)
-            willHeight = txtResultFont.GetPixelSize().Height * len(showList)
+            willHeight = (txtResultFont.GetPixelSize().Height + 2) * len(showList)
             print ("willHeight = " + str(willHeight))
             self.panel.txtResult.SetSize(920, willHeight)
             self.panel.txtResult.SetPosition(wx.Point(120, 455 + (135 - willHeight / 2)))
@@ -262,12 +279,12 @@ class MainFrame(wx.Frame):
         self.panel.txtResult.Hide()
         self.panel.txtBG.Hide()
 
-        showNumberFont = wx.Font(60, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="Kaiti SC")
+        showNumberFont = wx.Font(120, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="Kaiti SC")
         self.panel.showNumber.SetFont(showNumberFont)
-        self.panel.showNumber.Size = (610, 100)
-        self.panel.showNumber.SetPosition(wx.Point(0, 500))
+        self.panel.showNumber.Size = (1200, 180)
+        self.panel.showNumber.SetPosition(wx.Point(0, 450))
         self.HCenter(self.panel.showNumber)
-        self.panel.showNumber.SetLabel(u"祝大家中大奖")
+        self.panel.showNumber.SetLabel(u"好 运 连 连")
         self.panel.showNumber.Show()
         self.ChangeBGToMain()
 

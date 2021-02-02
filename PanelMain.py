@@ -6,28 +6,28 @@ class PanelMain (wx.Panel):
         wx.Panel.__init__ ( self, parent)
 
         # 这是起始显示和转起来的显示
-        self.showNumber = wx.StaticText(self, label=u"祝大家中大奖", size=(610, 100), style=wx.ALIGN_CENTRE_HORIZONTAL | wx.ST_NO_AUTORESIZE)
-        showNumberFont = wx.Font(60, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="Kaiti SC")
+        self.showNumber = wx.StaticText(self, label=u"好 运 连 连", size=(1200, 180), style=wx.ALIGN_CENTRE_HORIZONTAL | wx.ST_NO_AUTORESIZE)
+        showNumberFont = wx.Font(120, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="Kaiti SC")
         self.showNumber.SetForegroundColour(wx.Colour(255, 0, 0, 255))
         self.showNumber.SetBackgroundColour(wx.Colour(255, 207, 60, 255))
         self.showNumber.SetFont(showNumberFont)
-        self.showNumber.SetPosition(wx.Point(120, 500))
+        self.showNumber.SetPosition(wx.Point(120, 450))
 
         # 这个是用来显示结果时的背景色
-        self.txtBG = wx.StaticText(self, label=u"", size=(920, 300), style=wx.ALIGN_CENTRE_HORIZONTAL | wx.ST_NO_AUTORESIZE)
+        self.txtBG = wx.StaticText(self, label=u"", size=(1400, 600), style=wx.ALIGN_CENTRE_HORIZONTAL | wx.ST_NO_AUTORESIZE)
         self.txtBG.Hide()
-        self.txtBG.SetPosition(wx.Point(120, 400))
+        self.txtBG.SetPosition(wx.Point(120, 240))
         self.txtBG.SetForegroundColour(wx.Colour(255, 0, 0, 255))
         self.txtBG.SetBackgroundColour(wx.Colour(255, 207, 60, 255))
 
         # 这个是显示结果的标题，抽的是什么什么奖
-        self.txtTitle = wx.StaticText(self, label=u"", size=(610, 25), style=wx.ALIGN_CENTRE_HORIZONTAL | wx.ST_NO_AUTORESIZE)
+        self.txtTitle = wx.StaticText(self, label=u"", size=(610, 50), style=wx.ALIGN_CENTRE_HORIZONTAL | wx.ST_NO_AUTORESIZE)
         self.txtTitle.Hide()
-        txtTitleFont = wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="PingFang SC")
+        txtTitleFont = wx.Font(40, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="PingFang SC")
         self.txtTitle.SetForegroundColour(wx.Colour(255, 0, 0, 255))
         self.txtTitle.SetBackgroundColour(wx.Colour(255, 207, 60, 255))
         self.txtTitle.SetFont(txtTitleFont)
-        self.txtTitle.SetPosition(wx.Point(120, 415))
+        self.txtTitle.SetPosition(wx.Point(120, 250))
 
         # 抽出来的人小于等于10个，用这个显示
         self.txtResult = wx.StaticText(self, label=u"", size=(920, 310), style=wx.ALIGN_CENTRE_HORIZONTAL | wx.ST_NO_AUTORESIZE)
@@ -43,15 +43,15 @@ class PanelMain (wx.Panel):
         self.gridResult.Hide()
         self.gridResult.CreateGrid(10, 5)
         self.gridResult.SetDefaultCellTextColour(wx.Colour(255, 0, 0, 255))
-        self.gridResult.Size = (920, 310)
-        self.gridResult.SetPosition(wx.Point(0, 445))
+        self.gridResult.Size = (1400, 540)
+        self.gridResult.SetPosition(wx.Point(0, 330))
         self.gridResult.HideRowLabels()
         self.gridResult.HideColLabels()
         self.gridResult.EnableGridLines(False)
         self.gridResult.SetDefaultCellBackgroundColour(wx.Colour(255, 207, 60, 255))
-        cellFont = wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="Kaiti SC")
+        cellFont = wx.Font(40, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="Kaiti SC")
         self.gridResult.SetDefaultCellFont(cellFont)
-        self.gridResult.SetDefaultRowSize(31)
-        self.gridResult.SetDefaultColSize(180)
+        self.gridResult.SetDefaultRowSize(54)
+        self.gridResult.SetDefaultColSize(280)
         self.gridResult.SetDefaultCellAlignment(wx.ALIGN_CENTRE, wx.ALIGN_CENTRE)
 
