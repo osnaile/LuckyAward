@@ -11,6 +11,8 @@ from math import trunc
 class MainFrame(wx.Frame):
     def __init__(self, parent):
         global candidateList
+        global ListFont
+        global TitleFont
 
         wx.Frame.__init__(self, parent, title=u"抽奖", style=wx.MAXIMIZE | wx.DEFAULT_FRAME_STYLE)
 
@@ -264,7 +266,7 @@ class MainFrame(wx.Frame):
             else:
                 willFontSize = 34
             print (lenShowList, willFontSize)
-            txtResultFont = wx.Font(willFontSize, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="Kaiti SC")
+            txtResultFont = wx.Font(willFontSize, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName=ListFont)
             self.panel.txtResult.SetFont(txtResultFont)
             willHeight = (txtResultFont.GetPixelSize().Height + 2) * len(showList)
             print ("willHeight = " + str(willHeight))
@@ -280,7 +282,7 @@ class MainFrame(wx.Frame):
         self.panel.txtResult.Hide()
         self.panel.txtBG.Hide()
 
-        showNumberFont = wx.Font(120, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName="Kaiti SC")
+        showNumberFont = wx.Font(120, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName=ListFont)
         self.panel.showNumber.SetFont(showNumberFont)
         self.panel.showNumber.Size = (1200, 180)
         self.panel.showNumber.SetPosition(wx.Point(0, 450))
@@ -414,6 +416,10 @@ ReadExceptList()
 #print(exceptList)
 
 arrLevel = [[1, u"特等奖"], [2, u"一等奖"], [3, u"二等奖"], [4, u"三等奖"], [5, u"幸运奖"]]
+
+# 字体
+ListFont = "Kaiti SC"
+TitleFont = "PingFang SC"
 
 currentMaxCount = 0
 currentLevel = 0
