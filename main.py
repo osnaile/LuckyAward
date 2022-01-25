@@ -6,6 +6,7 @@ import time
 import os
 import codecs
 import PanelMain
+from math import trunc
 
 class MainFrame(wx.Frame):
     def __init__(self, parent):
@@ -117,8 +118,8 @@ class MainFrame(wx.Frame):
         dc.Clear()
         x, y = self.bmp.Size
         frame_width, frame_height = self.GetSize()
-        x = frame_width / 2 - x / 2
-        y = frame_height / 2 - y / 2
+        x = trunc(frame_width / 2 - x / 2)
+        y = trunc(frame_height / 2 - y / 2)
         dc.DrawBitmap(self.bmp, x, y)
         
     def OnStopRollNumber(self, e):
@@ -186,7 +187,7 @@ class MainFrame(wx.Frame):
         frame_width, frame_height = self.GetSize()
         obj_width, obj_height = obj.GetSize()
         obj_pos = obj.GetPosition()
-        x = frame_width / 2 - obj_width / 2
+        x = trunc(frame_width / 2 - obj_width / 2)
         obj_pos.x = x
         obj.SetPosition(obj_pos)
         
@@ -410,6 +411,7 @@ ReadExceptList()
 #print candidateList
 #print preList
 #print resultList
+#print(exceptList)
 
 arrLevel = [[1, u"特等奖"], [2, u"一等奖"], [3, u"二等奖"], [4, u"三等奖"], [5, u"幸运奖"]]
 
