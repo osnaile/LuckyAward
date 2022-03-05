@@ -1,16 +1,13 @@
 # coding:utf-8
 import wx
-import random
 import threading
 import time
-import os
-import codecs
 import PanelMain
+from AwardModal import AwardModal
 from math import trunc
 
 class MainFrame(wx.Frame):
     def __init__(self, parent):
-        global candidateList
         global ListFont
         global TitleFont
 
@@ -66,9 +63,8 @@ class MainFrame(wx.Frame):
         
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
-        self.rollCount = 0
 
-        self.CandidateCount.SetLabel(u"/" + str(len(candidateList)))
+        self.CandidateCount.SetLabel(u"/" + str(len(AwardModal.candidateList)))
 
         self.LoadBGMain()
         self.LoadBGResult()
@@ -129,7 +125,6 @@ class MainFrame(wx.Frame):
         
     def StopRoll(self):
         global bRolling
-        global candidateList
 
         if not bRolling:
             # print(u"Not Rolling")
@@ -141,11 +136,11 @@ class MainFrame(wx.Frame):
         
         global currentLevel
         global currentMaxCount
-        allNumberDisplay = getThisDegreeResult(currentLevel, currentMaxCount)
+        AwardModal.getThisDegreeResult(currentLevel, currentMaxCount)
         self.showResult(currentLevel)
         currentMaxCount = 0
 
-        self.CandidateCount.SetLabel(u"/" + str(len(candidateList)))
+        self.CandidateCount.SetLabel(u"/" + str(len(AwardModal.candidateList)))
         
         self.GetForthButton.Enable(True)
         self.GetThirdButton.Enable(True)
@@ -157,20 +152,16 @@ class MainFrame(wx.Frame):
     def startRoll(self, degree, limit):
         global currentLevel
         global currentMaxCount
-        global candidateList
 
-        self.rollCount = len(candidateList)
-        if self.rollCount == 0:
+        rollCount = len(AwardModal.candidateList)
+        if rollCount == 0:
             dlg = wx.MessageDialog(self, u"所有人都已抽中", u"提示", wx.OK)
             dlg.ShowModal()
             dlg.Destroy()
             return
-            
 
         currentLevel = degree
         currentMaxCount = limit
-        
-        self.rollCount = len(candidateList)
 
         self.hideResult()
         
@@ -220,12 +211,11 @@ class MainFrame(wx.Frame):
 
     def showResult(self, level):
         global arrLevel
-        global showList
 
         self.panel.txtBG.Show()
         self.HCenter(self.panel.txtBG)
 
-        lenShowList = len(showList)
+        lenShowList = len(AwardModal.showList)
         title = arrLevel[level-1][1]
         self.panel.showNumber.Hide()
         self.panel.txtTitle.SetLabel(u"获得" + title + u"的是")
@@ -239,7 +229,7 @@ class MainFrame(wx.Frame):
             col = 0
             if lenShowList <= 25:
                 row = 2
-            for item in showList:
+            for item in AwardModal.showList:
                 self.panel.gridResult.SetCellValue(row, col, item)
                 col = col + 1
                 if col == 5:
@@ -247,7 +237,7 @@ class MainFrame(wx.Frame):
                     row = row + 1
         else:
             txtToShow = u""
-            for item in showList:
+            for item in AwardModal.showList:
                 txtToShow = txtToShow + item + "\n"
             self.panel.txtResult.SetLabel(txtToShow)
             willFontSize = 20
@@ -268,10 +258,10 @@ class MainFrame(wx.Frame):
             print (lenShowList, willFontSize)
             txtResultFont = wx.Font(willFontSize, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName=ListFont)
             self.panel.txtResult.SetFont(txtResultFont)
-            willHeight = (txtResultFont.GetPixelSize().Height + 2) * len(showList)
+            willHeight = (txtResultFont.GetPixelSize().Height + 2) * len(AwardModal.showList)
             print ("willHeight = " + str(willHeight))
             self.panel.txtResult.SetSize(920, willHeight)
-            self.panel.txtResult.SetPosition(wx.Point(120, 455 + (135 - willHeight / 2)))
+            self.panel.txtResult.SetPosition(wx.Point(120, 455 + (135 - trunc(willHeight / 2))))
             self.HCenter(self.panel.txtResult)
             self.panel.txtResult.Show()
         self.ChangeBGToResult()
@@ -292,140 +282,27 @@ class MainFrame(wx.Frame):
         self.ChangeBGToMain()
 
     def showRandomNumber(self):
-        global candidateList
-        currentNumber = getRandom(self.rollCount)
-        willDisplay = candidateList[currentNumber - 1]
+        willDisplay = AwardModal.getRandomCandicate()
         self.panel.showNumber.SetLabel(willDisplay)
 
     def OnTimer(self, e):
         self.showRandomNumber()
 
-def getRandom(maxNumber):
-    theRandom = random.randint(1, maxNumber)
-    return theRandom
+if __name__ == '__main__':
+    AwardModal.get_data_from_file()
+    AwardModal.ReadResultList()
+    AwardModal.ReadExceptList()
 
-def getThisDegreeResult(degree, limit):
-    global candidateList
-    global preList
-    global showList
-    global thisLevelList
-    global exceptList
-    
-    allNumberDisplay = ""
-    trueDegree = degree - 1
-    print("trueDegree: ", trueDegree)
-    showList = []
+    arrLevel = [[1, u"特等奖"], [2, u"一等奖"], [3, u"二等奖"], [4, u"三等奖"], [5, u"幸运奖"]]
 
-    thisLevelList = []
-    for item in candidateList:
-        thisLevelList.append(item)
-    for item in exceptList[trueDegree]:
-        if (item in thisLevelList):
-            thisLevelList.remove(item)
+    # 字体
+    ListFont = "Kaiti SC"
+    TitleFont = "PingFang SC"
 
-    for i in (range(0, limit)):
-        if (len(preList[trueDegree]) > 0):
-            theNumberDisplay = preList[trueDegree][0]
-            del preList[trueDegree][0]
-            if theNumberDisplay in thisLevelList:
-                thisLevelList.remove(theNumberDisplay)
-        else:
-            if len(thisLevelList) == 0:
-                break
-            theNumber = getRandom(len(thisLevelList))
-            theNumberDisplay = thisLevelList[theNumber - 1]
-            del thisLevelList[theNumber - 1]
-        if theNumberDisplay in candidateList:
-            candidateList.remove(theNumberDisplay)
-        showList.append(theNumberDisplay)
-    SaveResult(degree)
+    currentMaxCount = 0
+    currentLevel = 0
+    bRolling = False
 
-def OpenList():
-    global candidateList
-    global preList
-    global candidateCount
-    fp = codecs.open("data/list.txt", "r", "utf-8")
-    for oneLine in fp.readlines():
-        txt = oneLine[:-1].rstrip()
-        if (txt.count(',') == 1):
-            degree = int(txt[-1]) - 1
-            preNumber = txt[:-2]
-            preList[degree].append(preNumber)
-        else:
-            candidateList.append(txt)
-    fp.close()
-
-def ReadExceptList():
-    global exceptList
-
-    if (not os.path.isfile("data/except.txt")):
-        return
-
-    fp = codecs.open("data/except.txt", "r", "utf-8")
-    for oneLine in fp.readlines():
-        txt = oneLine[:-1].rstrip()
-        if (txt.count(',') == 1):
-            degree = int(txt[-1]) - 1
-            preNumber = txt[:-2]
-            exceptList[degree].append(preNumber)
-    fp.close()
-
-def ReadResultList():
-    global resultList
-    global candidateList
-
-    if (not os.path.isfile("data/result.txt")):
-        #print "No Result File!"
-        return
-
-    fp = codecs.open("data/result.txt", "r+", "utf-8")
-    for oneLine in fp.readlines():
-        if oneLine == "":
-            continue
-        txt = oneLine[:-1]
-        degree = int(txt[0])
-        resultNumber = txt[2:]
-        resultList[degree - 1].append(resultNumber)
-        if (resultNumber in candidateList):
-            candidateList.remove(resultNumber)
-    fp.close()
-
-def SaveResult(degree):
-    global showList
-    global resultList
-    fp = codecs.open("data/result.txt", "a", "utf-8")
-    for item in showList:
-        resultList[degree-1].append(item)
-        #print str(degree) + "," + theNumberDisplay
-        fp.write(str(degree) + "," + item + "\n")
-    fp.close()
-
-candidateList = []              # 待抽奖列表
-preList = [[], [], [], [], []]      # 预计中奖列表
-resultList = [[], [], [], [], []]   # 已中奖列表
-showList = []                   # 抽完后显示用列表
-exceptList = [[], [], [], [], []]           # 不参与奖项列表
-thisLevelList = [[], []]        # 本次抽取时待抽列表，第一列是名字，第二列是在 candidateList 中的位置
-OpenList()
-ReadResultList()
-ReadExceptList()
-#print showList
-#print candidateList
-#print preList
-#print resultList
-#print(exceptList)
-
-arrLevel = [[1, u"特等奖"], [2, u"一等奖"], [3, u"二等奖"], [4, u"三等奖"], [5, u"幸运奖"]]
-
-# 字体
-ListFont = "Kaiti SC"
-TitleFont = "PingFang SC"
-
-currentMaxCount = 0
-currentLevel = 0
-bRolling = False
-
-app = wx.App(False)
-frame = MainFrame(None)
-app.MainLoop()
-
+    app = wx.App(False)
+    frame = MainFrame(None)
+    app.MainLoop()
