@@ -4,13 +4,11 @@ import threading
 import time
 import PanelMain
 from AwardModal import AwardModal
+from config import config
 from math import trunc
 
 class MainFrame(wx.Frame):
     def __init__(self, parent):
-        global ListFont
-        global TitleFont
-
         wx.Frame.__init__(self, parent, title=u"抽奖", style=wx.MAXIMIZE | wx.DEFAULT_FRAME_STYLE)
 
         self.panel = PanelMain.PanelMain(self)
@@ -31,19 +29,24 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnStopRollNumber, self.stopRollNumber)
 
         btnSize = (100, 30)
-        self.GetForthButton = wx.Button(self.panel, label=u"抽取幸运奖", pos=(300, 1040), size=btnSize)
+        btnTitle = u"抽取" + AwardModal.AwardLevel[4][1]
+        self.GetForthButton = wx.Button(self.panel, label=btnTitle, pos=(300, 1040), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnGetForthButton, self.GetForthButton)
 
-        self.GetThirdButton = wx.Button(self.panel, label=u"抽取三等奖", pos=(420, 1040), size=btnSize)
+        btnTitle = u"抽取" + AwardModal.AwardLevel[3][1]
+        self.GetThirdButton = wx.Button(self.panel, label=btnTitle, pos=(420, 1040), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnGetThirdButton, self.GetThirdButton)
 
-        self.GetSecondButton = wx.Button(self.panel, label=u"抽取二等奖", pos=(540, 1040), size=btnSize)
+        btnTitle = u"抽取" + AwardModal.AwardLevel[2][1]
+        self.GetSecondButton = wx.Button(self.panel, label=btnTitle, pos=(540, 1040), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnGetSecondButton, self.GetSecondButton)
 
-        self.GetFirstButton = wx.Button(self.panel, label=u"抽取一等奖", pos=(660, 1040), size=btnSize)
+        btnTitle = u"抽取" + AwardModal.AwardLevel[1][1]
+        self.GetFirstButton = wx.Button(self.panel, label=btnTitle, pos=(660, 1040), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnGetFirstButton, self.GetFirstButton)
 
-        self.GetSpecialButton = wx.Button(self.panel, label=u"抽取特等奖", pos=(780, 1040), size=btnSize)
+        btnTitle = u"抽取" + AwardModal.AwardLevel[0][1]
+        self.GetSpecialButton = wx.Button(self.panel, label=btnTitle, pos=(780, 1040), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnGetSpecialButton, self.GetSpecialButton)
 
         self.btnShowResultPanel = wx.Button(self.panel, label=u"显示上次结果", pos=(900, 1040), size=btnSize)
@@ -96,11 +99,11 @@ class MainFrame(wx.Frame):
         self.Refresh()
 
     def LoadBGMain(self):
-        image_file = "background.jpg"
+        image_file = "resources/background.jpg"
         self.bmpMain = wx.Bitmap(image_file)
 
     def LoadBGResult(self):
-        image_file = "bg_result.jpg"
+        image_file = "resources/bg_result.jpg"
         self.bmpResult = wx.Bitmap(image_file)
 
     def OnEraseBack(self, event):
@@ -210,13 +213,11 @@ class MainFrame(wx.Frame):
         self.startRoll(1, self.getInputCount())
 
     def showResult(self, level):
-        global arrLevel
-
         self.panel.txtBG.Show()
         self.HCenter(self.panel.txtBG)
 
         lenShowList = len(AwardModal.showList)
-        title = arrLevel[level-1][1]
+        title = AwardModal.AwardLevel[level-1][1]
         self.panel.showNumber.Hide()
         self.panel.txtTitle.SetLabel(u"获得" + title + u"的是")
         self.HCenter(self.panel.txtTitle)
@@ -256,7 +257,7 @@ class MainFrame(wx.Frame):
             else:
                 willFontSize = 34
             print (lenShowList, willFontSize)
-            txtResultFont = wx.Font(willFontSize, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName=ListFont)
+            txtResultFont = wx.Font(willFontSize, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName=config.ListFont)
             self.panel.txtResult.SetFont(txtResultFont)
             willHeight = (txtResultFont.GetPixelSize().Height + 2) * len(AwardModal.showList)
             print ("willHeight = " + str(willHeight))
@@ -272,7 +273,7 @@ class MainFrame(wx.Frame):
         self.panel.txtResult.Hide()
         self.panel.txtBG.Hide()
 
-        showNumberFont = wx.Font(120, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName=ListFont)
+        showNumberFont = wx.Font(120, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName=config.TitleFont)
         self.panel.showNumber.SetFont(showNumberFont)
         self.panel.showNumber.Size = (1200, 180)
         self.panel.showNumber.SetPosition(wx.Point(0, 450))
@@ -289,15 +290,13 @@ class MainFrame(wx.Frame):
         self.showRandomNumber()
 
 if __name__ == '__main__':
-    AwardModal.get_data_from_file()
-    AwardModal.ReadResultList()
-    AwardModal.ReadExceptList()
+    # 初始化
+    AwardModal.get_data_from_file() # 读人员清单
+    AwardModal.ReadResultList() # 读已保存的抽奖结果
+    AwardModal.ReadExceptList() # 读例外清单
+    AwardModal.ReadAwardLevel() # 读奖项设置
 
-    arrLevel = [[1, u"特等奖"], [2, u"一等奖"], [3, u"二等奖"], [4, u"三等奖"], [5, u"幸运奖"]]
-
-    # 字体
-    ListFont = "Kaiti SC"
-    TitleFont = "PingFang SC"
+    config.ReadConfig() # 读取配置文件
 
     currentMaxCount = 0
     currentLevel = 0

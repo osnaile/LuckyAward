@@ -3,6 +3,10 @@ import codecs
 import random
 
 class AwardModal():
+    
+    # 奖项名称，如特等奖、一等奖
+    AwardLevel = [[], [], [], [], []]
+    
     # 待抽奖名单
     candidateList = []
     
@@ -111,3 +115,24 @@ class AwardModal():
                 AwardModal.candidateList.remove(theNumberDisplay)
             AwardModal.showList.append(theNumberDisplay)
         AwardModal.SaveResult(degree)
+        
+    def ReadAwardLevel():
+        if (not os.path.isfile("data/AwardLevel.txt")):
+            return
+
+        fp = codecs.open("data/AwardLevel.txt", "r", "utf-8")
+        for oneLine in fp.readlines():
+            txt = oneLine[:-1].rstrip()
+            if len(txt) == 0:
+                continue
+            if txt[0] == '#':
+                continue
+            if (txt.count(',') == 1):
+                print(txt)
+                degree = int(txt[0]) - 1
+                AwardName = txt[2:]
+                AwardModal.AwardLevel[degree].append(degree)
+                AwardModal.AwardLevel[degree].append(AwardName)
+        fp.close()
+        
+        print (AwardModal.AwardLevel)

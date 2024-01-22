@@ -1,5 +1,6 @@
 import wx
 import wx.grid
+from config import config
 
 class PanelMain (wx.Panel):
     ListFont = "Kaiti SC"
@@ -8,6 +9,9 @@ class PanelMain (wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__ ( self, parent)
 
+        self.ListFont = config.ListFont
+        self.TitleFont = config.TitleFont
+        
         # 这是起始显示和转起来的显示
         self.showNumber = wx.StaticText(self, label=u"好 运 连 连", size=(1200, 180), style=wx.ALIGN_CENTRE_HORIZONTAL | wx.ST_NO_AUTORESIZE)
         showNumberFont = wx.Font(120, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.FONTWEIGHT_BOLD, faceName=self.ListFont)
