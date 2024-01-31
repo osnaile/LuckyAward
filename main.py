@@ -54,6 +54,9 @@ class MainFrame(wx.Frame):
 
         self.btnHideResultPanel = wx.Button(self.panel, label=u"关闭结果显示", pos=(1020, 1040), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnBtnHideResultPanel, self.btnHideResultPanel)
+        
+        self.btnCancelRoll = wx.Button(self.panel, label=u"取消抽奖", pos=(1400, 1040), size=btnSize)
+        self.Bind(wx.EVT_BUTTON, self.OnBtnCancelRoll, self.btnCancelRoll)
 
         self.GetForthButton.Enable(True)
         self.GetThirdButton.Enable(True)
@@ -123,10 +126,33 @@ class MainFrame(wx.Frame):
         y = trunc(frame_height / 2 - y / 2)
         dc.DrawBitmap(self.bmp, x, y)
         
-    def OnStopRollNumber(self, e):
-        self.StopRoll()
+    def OnBtnCancelRoll(self, event):
+        global bRolling
+
+        if not bRolling:
+            # print(u"Not Rolling")
+            return
+
+        self.timer.Stop()
+        self.panel.showNumber.SetLabel(u"好 运 连 连")
+        bRolling = False
         
-    def StopRoll(self):
+        global currentLevel
+        global currentMaxCount
+
+        currentMaxCount = 0
+        
+        self.GetForthButton.Enable(True)
+        self.GetThirdButton.Enable(True)
+        self.GetSecondButton.Enable(True)
+        self.GetFirstButton.Enable(True)
+        self.GetSpecialButton.Enable(True)
+        self.stopRollNumber.Enable(False)
+        
+    def OnStopRollNumber(self, e):
+        self.StopRoll(self.getInputCount())
+        
+    def StopRoll(self, limit):
         global bRolling
 
         if not bRolling:
@@ -139,6 +165,7 @@ class MainFrame(wx.Frame):
         
         global currentLevel
         global currentMaxCount
+        currentMaxCount = limit
         AwardModal.getThisDegreeResult(currentLevel, currentMaxCount)
         self.showResult(currentLevel)
         currentMaxCount = 0
