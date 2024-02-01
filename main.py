@@ -150,9 +150,9 @@ class MainFrame(wx.Frame):
         self.stopRollNumber.Enable(False)
         
     def OnStopRollNumber(self, e):
-        self.StopRoll(self.getInputCount())
+        self.StopRoll()
         
-    def StopRoll(self, limit):
+    def StopRoll(self):
         global bRolling
 
         if not bRolling:
@@ -165,7 +165,7 @@ class MainFrame(wx.Frame):
         
         global currentLevel
         global currentMaxCount
-        currentMaxCount = limit
+        currentMaxCount = self.getInputCount()
         AwardModal.getThisDegreeResult(currentLevel, currentMaxCount)
         self.showResult(currentLevel)
         currentMaxCount = 0
