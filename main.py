@@ -58,6 +58,9 @@ class MainFrame(wx.Frame):
         self.btnCancelRoll = wx.Button(self.panel, label=u"取消抽奖", pos=(1400, 1040), size=btnSize)
         self.Bind(wx.EVT_BUTTON, self.OnBtnCancelRoll, self.btnCancelRoll)
 
+        self.btnSaveLeftList = wx.Button(self.panel, label=u"导出剩余人员", pos=(1600, 1040), size=btnSize)
+        self.Bind(wx.EVT_BUTTON, self.OnBtnSaveLeftList, self.btnSaveLeftList)
+
         self.GetForthButton.Enable(True)
         self.GetThirdButton.Enable(True)
         self.GetSecondButton.Enable(True)
@@ -126,6 +129,10 @@ class MainFrame(wx.Frame):
         y = trunc(frame_height / 2 - y / 2)
         dc.DrawBitmap(self.bmp, x, y)
         
+
+    def OnBtnSaveLeftList(self, event):
+        AwardModal.SaveLeftList()
+
     def OnBtnCancelRoll(self, event):
         global bRolling
 
