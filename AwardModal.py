@@ -79,6 +79,13 @@ class AwardModal():
             fp.write(str(degree) + "," + item + "\n")
         fp.close()
         
+    # 把当前在待抽名单中的人保存到文件中 leftlist.txt
+    def SaveLeftList():
+        fp = codecs.open("data/leftlist.txt", "w", "utf-8")
+        for item in AwardModal.candidateList:
+            fp.write(item + "\n")
+        fp.close()
+
     def getRandom(maxNumber):
         theRandom = random.randint(1, maxNumber)
         return theRandom
